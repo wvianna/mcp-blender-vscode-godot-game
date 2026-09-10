@@ -47,7 +47,7 @@ flowchart LR
 **POC 4:** `npc.gd`, `world_events.gd`, `memory_store.gd` (4 camadas).
 **POC 5:** `lab_generator.gd` (módulos, seed, BFS).
 **POC 6:** `tutorial.gd`, `vertical_slice.gd`, `epilogue.gd`, `epilogue_ui.gd`, `save_system.gd`, `sfx.gd`.
-**Visual (2026-09-10):** `security_camera.gd` (câmera de segurança que acompanha o jogador após a energia voltar); `main.tscn` com `Environment` de contraste alto + neblina e `Level` com `Lights`/`Accents`/`Labels`/`CAM_Security`.
+**Visual (2026-09-10):** `security_camera.gd` (câmera de segurança que acompanha o jogador após a energia voltar) e `status_leds.gd` (pisca os LEDs de status do CLP/painel em períodos distintos, já que o glTF não anima emissão); `main.tscn` com `Environment` de contraste alto + neblina e `Level` com `Lights`/`Accents`/`Labels`/`CAM_Security`/`Screens`/`Bancada`/`StatusLeds`.
 **Globais:** autoloads `Lab404Game` (`game.gd`) e `Lab404Sfx` (`sfx.gd`); `game_state.gd`, `quest_manager.gd` instanciados pelo autoload.
 **Ferramentas:** `tools/gen_audio.py` (WAV originais), `tools/` vazio fora isso; testes em `tests/`.
 
@@ -67,7 +67,7 @@ Comandos:
 - `tests/run_all.sh` — suíte completa: POC 1–6 (Godot headless) + `tests/test_aria_adapter.py` (venv).
 - `godot4 --headless --path . res://tests/pocN_test.tscn` — uma cena de teste isolada.
 - `LAB404_SHOT_PATH=$HOME/lab404.png godot4 --path . res://tests/screenshot.tscn` — evidência visual + FPS.
-  Variáveis extras: `LAB404_SHOT_POSE="x,y,z,yaw"` (posiciona o jogador antes da captura), `LAB404_SHOT_DUMP=1` (imprime luzes/letreiros/câmera) e `LAB404_SHOT_FINISH=1` (conclui a missão, liga a energia e abre a porta — evidência do estado final).
+  Variáveis extras: `LAB404_SHOT_POSE="x,y,z,yaw[,pitch]"` (posiciona o jogador antes da captura; pitch negativo olha para baixo), `LAB404_SHOT_DUMP=1` (imprime NPC/luzes/letreiros/detalhes) e `LAB404_SHOT_FINISH=1` (conclui a missão, liga a energia e abre a porta — evidência do estado final).
 - Smoke: `godot4 --headless --path . --quit-after 240`.
 - Adapter: `.venv/bin/uvicorn scripts.aria_adapter:app --port 8000`; testes: `.venv/bin/python tests/test_aria_adapter.py`.
 

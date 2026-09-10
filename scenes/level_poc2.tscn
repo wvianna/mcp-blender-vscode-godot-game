@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/lab_setup.gd" id="1_lab"]
 [ext_resource type="PackedScene" path="res://assets/lab404/lab_sala_poc2.glb" id="2_glb"]
@@ -24,6 +24,26 @@ albedo_color = Color(0.1, 0.2, 0.3, 1)
 emission_enabled = true
 emission = Color(0.3, 0.8, 1, 1)
 emission_energy_multiplier = 1.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_cabo"]
+size = Vector3(0.03, 1, 0.03)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.16, 0.17, 0.19, 1)
+metallic = 0.6
+roughness = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_luminaria"]
+size = Vector3(0.34, 0.12, 0.26)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lente"]
+size = Vector3(0.28, 0.02, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lente"]
+albedo_color = Color(0.35, 0.33, 0.28, 1)
+emission_enabled = true
+emission = Color(1, 0.93, 0.82, 1)
+emission_energy_multiplier = 1.5
 
 [node name="Level" type="Node3D"]
 script = ExtResource("1_lab")
@@ -202,57 +222,82 @@ periods = PackedFloat32Array(0.9, 1.4, 2.2, 3.0, 1.1, 2.6, 0.7)
 [node name="Screens" type="Node3D" parent="."]
 
 [node name="SCR_Monitor_A" type="Label3D" parent="Screens"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.4, 1.28, -7.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.4, 1.28, -7.47)
 pixel_size = 0.0018
-outline_size = 6
-modulate = Color(0.62, 0.9, 1, 1)
+modulate = Color(0.04, 0.13, 0.17, 1)
 text = "SISTEMA NEURAL ARIA\nOperacional (v4.04)\n\nREDE SINÁPTICA\nEstabilidade do núcleo em 98.2%"
 font_size = 24
 
 [node name="SCR_Monitor_B" type="Label3D" parent="Screens"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9, 1.28, -7.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9, 1.28, -7.47)
 pixel_size = 0.0018
-outline_size = 6
-modulate = Color(0.6, 1, 0.78, 1)
+modulate = Color(0.03, 0.14, 0.07, 1)
 text = "PROCESSAMENTO PREDITIVO\nAnálise de fluxo em andamento...\n\nMÓDULO DE APRENDIZADO\nOtimizando rotinas operacionais"
 font_size = 24
 
 [node name="SCR_Quadro" type="Label3D" parent="Screens"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.6, 1.9, -7.84)
 pixel_size = 0.0016
-outline_size = 8
-modulate = Color(0.65, 0.92, 1, 1)
+modulate = Color(0.14, 0.11, 0.03, 1)
 text = "SISTEMA NEURAL ARIA: Operacional (v4.04)\nREDE SINÁPTICA: Estabilidade do núcleo em 98.2%\nMÓDULO DESCARGA: Preciso ir ao banheiro"
 font_size = 36
 
 [node name="SCR_Painel" type="Label3D" parent="Screens"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.52, -7.64)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.52, -7.62)
+pixel_size = 0.0019
+modulate = Color(0.03, 0.14, 0.07, 1)
+text = "SISTEMA NEURAL ARIA\nOperacional (v4.04)"
+font_size = 34
+
+[node name="SCR_Aria" type="Label3D" parent="Screens"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 5, 1.42, 7.62)
 pixel_size = 0.0016
-outline_size = 6
-modulate = Color(0.6, 1, 0.78, 1)
-text = "SISTEMA NEURAL ARIA: Operacional (v4.04)"
-font_size = 32
+modulate = Color(0.04, 0.12, 0.16, 1)
+billboard = 1
+text = "ARIA v4.04\nNÚCLEO ONLINE\ncanal: 8000"
+font_size = 30
 
 [node name="SCR_Clp" type="Label3D" parent="Screens"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -10.25, 1.40, 1.9)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10.24, 1.4, 1.9)
 pixel_size = 0.0016
-outline_size = 6
-modulate = Color(1, 0.78, 0.4, 1)
-text = "PLC-01  LADDER\nI0.0 --| |--( Q0.0 )\nI0.1 --|/|--( M1.2 )\nRUN  CICLO v4.04"
-font_size = 20
+modulate = Color(0.16, 0.09, 0.02, 1)
+billboard = 1
+text = "I0.0 | |-( Q0.0 )\nI0.1 |/|-( M1.2 )\nRUN  CICLO v4.04"
+font_size = 30
 
 [node name="DEC_Lbl_Fusivel" type="Label3D" parent="Screens"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.42, 1.42, -7.66)
-pixel_size = 0.0016
-outline_size = 8
-modulate = Color(1, 0.86, 0.5, 1)
-text = "FUSÍVEL - 12V"
-font_size = 24
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.42, 1.2, -7.61)
+pixel_size = 0.0015
+modulate = Color(0.13, 0.1, 0.02, 1)
+text = "FUSÍVEL\n12V"
+font_size = 22
 
 [node name="DEC_Lbl_Rs404" type="Label3D" parent="Screens"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.42, 1.42, -7.66)
-pixel_size = 0.0016
-outline_size = 8
-modulate = Color(1, 0.86, 0.5, 1)
-text = "INTERACTION PORT\nRS-404"
-font_size = 24
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.42, 1.2, -7.61)
+pixel_size = 0.0015
+modulate = Color(0.13, 0.1, 0.02, 1)
+text = "INTERACTION\nPORT RS-404"
+font_size = 22
+
+[node name="Bancada" type="Node3D" parent="."]
+
+[node name="Cabo" type="MeshInstance3D" parent="Bancada"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.5, 6)
+mesh = SubResource("BoxMesh_cabo")
+material_override = SubResource("StandardMaterial3D_metal")
+
+[node name="Luminaria" type="MeshInstance3D" parent="Bancada"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.95, 6)
+mesh = SubResource("BoxMesh_luminaria")
+material_override = SubResource("StandardMaterial3D_metal")
+
+[node name="Lente" type="MeshInstance3D" parent="Bancada"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.88, 6)
+mesh = SubResource("BoxMesh_lente")
+material_override = SubResource("StandardMaterial3D_lente")
+
+[node name="FX_Luz_Bancada" type="OmniLight3D" parent="Bancada"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.82, 6)
+light_color = Color(1, 0.93, 0.82, 1)
+light_energy = 1.7
+omni_range = 4.0

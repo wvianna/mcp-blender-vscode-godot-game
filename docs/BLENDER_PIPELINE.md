@@ -116,3 +116,21 @@ bpy.ops.export_scene.gltf(
 ```
 
 Depois de reexportar: `godot4 --headless --path . --import` e `tests/run_all.sh`.
+
+## Detalhamento de elementos (decoração e telas)
+
+Receitas usadas no refino dos props (`docs/Detalhamento-elementos.txt`):
+
+1. **Decalque = caixa fina colada na face.** Zebra de perigo, triângulo de alerta, esquema de fiação e
+   rótulos de slot são caixas de 1–2 cm de espessura, posicionadas 1–2 cm **à frente** da face do painel
+   (nunca na mesma profundidade: a face opaca esconde o decalque).
+2. **Texto de tela vai para o Godot** (`Label3D` no nó `Screens`), seguindo a regra dos letreiros:
+   sobre tela emissiva o texto deve ser **escuro e sem contorno** (contorno claro só em texto sobre fundo escuro).
+3. **LED que pisca não é animação de glTF.** O glTF anima apenas TRS (posição/rotação/escala), não emissão
+   de material: os LEDs são nós separados no GLB e quem pisca é `scripts/status_leds.gd`.
+4. **Peça solta precisa de apoio visível.** Tubulações horizontais ganham poste + braçadeira ancorando ao
+   piso/base, e parafusos sextavados (`primitive_cylinder_add(vertices=6)`) evidenciam a fixação.
+5. **Desgaste metálico** = anéis/placas com material próprio (`MAT_Desgaste`, marrom escuro, rugosidade alta)
+   aplicados sobre tubos e conexões.
+6. **Easter eggs** (ex.: pato de borracha) entram como objeto único unido (`bpy.ops.object.join()`),
+   com o prefixo `DEC_`.

@@ -13,8 +13,9 @@
 
 ## POC 2
 - [x] Blender (5.2.1 LTS, sala com painel/CLP/bomba/tanque/sensor/porta/itens)
-- [x] GLB (`assets/lab404/lab_sala_poc2.glb`, 245 objetos, colisão por sufixo `-col`)
+- [x] GLB (`assets/lab404/lab_sala_poc2.glb`, 342 objetos, colisão por sufixo `-col`)
 - [x] NPC técnico completo (macacão, colete refletivo, luvas, botas, capacete com lanterna e rosto)
+- [x] detalhamento fino: CLP com ranhuras/LEDs piscando, decalques do painel, telas com textos de IA em português, microeletrônica do RS-404, bomba ancorada ao piso com manômetro e válvulas, pato de borracha na bancada
 - [x] identidade visual (infraestrutura de teto, faixas, bancada, tanque TK-01, bomba, sala de controle, passarela e escada)
 - [x] iluminação em camadas (luz geral claro/emergência + acentos por zona, alinhados às luminárias visíveis)
 - [x] letreiros `Label3D` das estações e câmera de segurança que acompanha o jogador (`FR-015a`/`FR-024a`/`FR-024b`)

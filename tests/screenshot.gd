@@ -9,7 +9,7 @@ extends Node
 ## Variáveis:
 ##   LAB404_SHOT_PATH  caminho do PNG (padrão: user://lab404_screenshot.png)
 ##   LAB404_SHOT_VIEW  vazio (jogo) | input_test | terminal
-##   LAB404_SHOT_POSE  "x,y,z,yaw_graus" → posiciona o jogador antes da captura
+##   LAB404_SHOT_POSE  "x,y,z,yaw_graus[,pitch_graus]" → posiciona o jogador antes da captura
 ##   LAB404_SHOT_DUMP  "1" → imprime posições de Accents/Labels/CAM_Security
 ##   LAB404_SHOT_FINISH "1" → conclui a missão, restabelece a energia e abre a porta
 ##
@@ -28,6 +28,16 @@ func _ready() -> void:
             main.get_node("UI/InputTest").visible = true
         "terminal":
             main.get_node("UI/ARIATerminal").open()
+        "terminal_ask":
+            # Evidência ponta a ponta: pergunta no terminal e espera a resposta da ARIA.
+            var terminal = main.get_node("UI/ARIATerminal")
+            terminal.open()
+            await get_tree().process_frame
+            terminal._on_submit("ARIA, qual é o estado do laboratório?")
+            var limite := Time.get_ticks_msec() + 45000
+            while terminal._client.is_busy() and Time.get_ticks_msec() < limite:
+                await get_tree().process_frame
+            print("LAB404-ASK: resposta em %.1fs" % ((45000 - (limite - Time.get_ticks_msec())) / 1000.0))
 
     _aplicar_pose(main)
 
@@ -64,7 +74,7 @@ func _ready() -> void:
                 for irmao in pai.get_children():
                     if "NPC" in String(irmao.name):
                         print("   irmão: %s (%s)" % [irmao.name, irmao.get_class()])
-        for grupo in ["Accents", "Labels", "CAM_Security"]:
+        for grupo in ["Accents", "Labels", "CAM_Security", "Screens"]:
             var no = level.get_node_or_null(grupo) if level != null else null
             if no == null:
                 print("LAB404-DUMP %s -> AUSENTE" % grupo)
@@ -72,6 +82,15 @@ func _ready() -> void:
             print("LAB404-DUMP %s -> %d filho(s)" % [grupo, no.get_child_count()])
             for filho in no.get_children():
                 print("   %s %s" % [filho.name, str(filho.global_position)])
+        for detalhe in ["DEC_Mesa_Pato", "RS404_Capacitor_0", "DEC_CLP_Ranhura_0",
+                "DEC_Bomba_Suporte2_Poste", "DEC_Painel_Esquema_L1", "DEC_Painel_Alerta"]:
+            var det = level.find_child(detalhe, true, false) if level != null else null
+            print("LAB404-DUMP %s -> %s" % [detalhe, "AUSENTE" if det == null else str(det.global_position)])
+        var rotulos: Array = []
+        _coletar_labels(main, rotulos)
+        print("LAB404-DUMP Label3D: %d" % rotulos.size())
+        for info in rotulos:
+            print("   %s pos=%s texto=%s" % [info["nome"], info["pos"], info["texto"].substr(0, 28)])
 
     # Aguarda o assentamento da física e a estabilização do frame.
     for _i in 60:
@@ -98,18 +117,34 @@ func _ready() -> void:
     print("LAB404-SHOT: %s (erro=%d) %dx%d" % [out, err, image.get_width(), image.get_height()])
     get_tree().quit(0 if err == OK else 1)
 
-## Pose opcional do jogador: `LAB404_SHOT_POSE="x,y,z,yaw_graus"`.
+## Pose opcional do jogador: `LAB404_SHOT_POSE="x,y,z,yaw_graus[,pitch_graus]"`.
 func _aplicar_pose(main: Node) -> void:
     var pose := OS.get_environment("LAB404_SHOT_POSE")
     if pose.is_empty():
         return
     var partes := pose.split(",")
     var jogador = main.get_node_or_null("Player")
-    if partes.size() != 4 or jogador == null:
-        push_warning("LAB404_SHOT_POSE inválida (use x,y,z,yaw) — ignorada")
+    if partes.size() < 4 or jogador == null:
+        push_warning("LAB404_SHOT_POSE inválida (use x,y,z,yaw[,pitch]) — ignorada")
         return
     jogador.global_position = Vector3(float(partes[0]), float(partes[1]), float(partes[2]))
     jogador.rotation.y = deg_to_rad(float(partes[3]))
+    if partes.size() >= 5:
+        # Pitch negativo = olhar para baixo (útil para props no piso/bancada).
+        var pivot = jogador.get_node_or_null("CameraPivot")
+        if pivot != null:
+            pivot.rotation.x = deg_to_rad(clampf(float(partes[4]), -85.0, 85.0))
     if jogador is CharacterBody3D:
         jogador.velocity = Vector3.ZERO
     print("LAB404-POSE: %s" % pose)
+
+## Coleta recursiva dos `Label3D` da cena (diagnóstico de rótulos sobrepostos).
+func _coletar_labels(no: Node, saida: Array) -> void:
+    if no is Label3D:
+        saida.append({
+            "nome": no.get_path(),
+            "pos": str(no.global_position),
+            "texto": String(no.text).replace("\n", " | "),
+        })
+    for filho in no.get_children():
+        _coletar_labels(filho, saida)

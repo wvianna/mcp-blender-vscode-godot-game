@@ -62,11 +62,22 @@ junto com ela quando abre (FR-011) — regressão do defeito "a porta abre, mas 
 Evidência visual (fora da suíte headless):
 
 ```bash
+# pose = x,y,z, yaw[, pitch]  (pitch negativo olha para baixo)
 LAB404_SHOT_PATH=$HOME/sala.png LAB404_SHOT_POSE="0,0.05,2,0" \
     godot4 --path . res://tests/screenshot.tscn
 ```
 
-Capturas de referência versionadas: `docs/images/` (sala, CLP, bomba, ARIA, técnico e porta B1).
+Capturas de referência versionadas: `docs/images/` (sala, CLP, bomba, ARIA, técnico, porta B1 e detalhes).
+`LAB404_SHOT_DUMP=1` imprime NPC, luzes, letreiros e detalhes (útil para achar props fora de quadro).
+
+Modos de `LAB404_SHOT_VIEW`:
+
+| Valor | O que faz |
+|---|---|
+| *(vazio)* | jogo normal, só posiciona a câmera |
+| `input_test` | abre o diagnóstico de input |
+| `terminal` | abre o terminal da ARIA |
+| `terminal_ask` | abre o terminal, **envia uma pergunta** e espera a resposta (evidência ponta a ponta do FR-019) |
 
 - [ ] conferir no hardware: conforto da retícula e do alcance de interação (1,7 m)
 

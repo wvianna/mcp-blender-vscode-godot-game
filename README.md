@@ -427,15 +427,38 @@ lab404/
 
 ## Galeria visual
 
-Todas as imagens abaixo são capturas reais do jogo (`tests/screenshot.tscn`, 1280×720, 60 FPS em iGPU).
+Todas as imagens abaixo são capturas **atuais** do jogo (POC 2), geradas por `tests/screenshot.tscn`
+em 1280×720 a 60 FPS na iGPU.
 
 <p>
-  <img src="docs/images/poc2-sala-emergencia.png" alt="Sala do Laboratório 404 com iluminação de emergência" width="49%">
-  <img src="docs/images/poc2-sala-aria.png" alt="Terminal da ARIA iluminado em ciano" width="49%">
+  <img src="docs/images/poc2-sala-geral.png" alt="Sala do Laboratório 404 com a energia isolada: luminárias apagadas, técnico à esquerda e bomba em falha" width="49%">
+  <img src="docs/images/poc2-sala-energizada.png" alt="Mesma vista com a missão concluída: energia restaurada e iluminação geral acesa" width="49%">
 </p>
 
-**Esquerda — energia isolada (início):** luz geral fraca e azulada, beacons vermelhos acesos, uma luminária piscando e os acentos de zona (ARIA em ciano, painel em verde, bomba em âmbar).
-**Direita — terminal da ARIA:** o brilho ciano identifica a IA no laboratório; é aqui que o jogador conversa com ela (LLM local via Ollama).
+**Esquerda — energia isolada (início):** luz geral fraca, acentos de zona (ARIA em ciano, painel em
+verde, bomba em âmbar), técnico parado perto da bancada e a lista de objetivos do HUD.
+**Direita — energia restaurada (missão concluída):** as luminárias do teto assumem, a câmera de
+segurança passa a acompanhar o jogador e a porta B1 libera o corredor.
+
+### Estações do laboratório
+
+<p>
+  <img src="docs/images/poc2-clp.png" alt="CLP-01 com ranhuras de ventilação, LEDs de status e tela com lógica Ladder" width="49%">
+  <img src="docs/images/poc2-painel.png" alt="Painel de encaixe com faixas zebradas, moldura dos slots e rótulos FUSÍVEL 12V e RS-404" width="49%">
+</p>
+<p>
+  <img src="docs/images/poc2-bomba.png" alt="Conjunto motobomba BOMBA-01 ancorado ao piso, com o indicador NÍVEL 42% do tanque TK-01" width="49%">
+  <img src="docs/images/poc2-aria.png" alt="Estação da ARIA: console com tela ciano, leitura do núcleo e câmera de vigilância" width="49%">
+</p>
+
+Da esquerda para a direita, de cima para baixo:
+
+| Arquivo | O que mostra |
+|---|---|
+| `docs/images/poc2-clp.png` | **CLP-01**: ranhuras de ventilação, LEDs de status piscando e tela com lógica Ladder (`I0.0 \| \|-( Q0.0 )`) |
+| `docs/images/poc2-painel.png` | **painel de encaixe**: faixas zebradas, triângulo de alerta elétrico, esquema de fiação e rótulos `FUSÍVEL 12V` / `INTERACTION PORT RS-404` |
+| `docs/images/poc2-bomba.png` | **BOMBA-01**: base metálica parafusada, braçadeiras no tubo de sucção, manômetro, válvulas e o indicador **NÍVEL 42%** do tanque **TK-01** |
+| `docs/images/poc2-aria.png` | **estação da ARIA**: console com tela ciano, leitura `ARIA v4.04 · NÚCLEO ONLINE · canal: 8000`, luminária e câmera de vigilância |
 
 <p>
   <img src="docs/images/poc2-porta-b1-fechada.png" alt="Porta B1 fechada" width="49%">
@@ -456,51 +479,77 @@ faixas refletivas, cinto com bolsa e fivela, luvas, botas, capacete de obra com 
 com olhos, sobrancelhas, nariz e boca. É **um único mesh** (882 vértices, 10 materiais) que também
 serve de volume de colisão — mesmo padrão dos demais objetos `-col` do GLB.
 
-### Estações do laboratório
+### Bancada de trabalho
 
 <p>
-  <img src="docs/images/sala.png" alt="Vista ampla da sala do Laboratório 404" width="49%">
-  <img src="docs/images/clp.png" alt="Painel CLP-01 em falha, com HMI amarelo" width="49%">
+  <img src="docs/images/poc2-bancada.png" alt="Bancada com luminária pendente, fusível F-17 e ferramentas" width="49%">
+</p>
+
+Luminária pendente com lente emissiva iluminando a bancada onde estão o **fusível F-17** e os
+primeiros itens do kit técnico — a área mais quente do início do jogo.
+
+### Detalhes dos elementos (`docs/Detalhamento-elementos.txt`)
+
+<p>
+  <img src="docs/images/poc2-detalhe-clp.png" alt="CLP-01 com ranhuras de ventilação, LEDs de status e tela com lógica Ladder" width="49%">
+  <img src="docs/images/poc2-detalhe-painel.png" alt="Painel de encaixe com faixas zebradas, molduras dos slots e identificação FUSÍVEL 12V / RS-404" width="49%">
 </p>
 <p>
-  <img src="docs/images/bomba.png" alt="Conjunto motobomba BOMBA-01 com o indicador NÍVEL 42% do tanque TK-01" width="49%">
-  <img src="docs/images/aria.png" alt="Terminal da ARIA com a tela ciano e o lema ARIA ao lado" width="49%">
+  <img src="docs/images/poc2-detalhe-telas.png" alt="Monitores da sala de controle e quadro com mensagens do sistema neural ARIA" width="49%">
+  <img src="docs/images/poc2-detalhe-bomba.png" alt="Estação da bomba hidráulica ancorada ao piso com base metálica parafusada" width="49%">
 </p>
 
-Da esquerda para a direita, de cima para baixo:
-
-| Arquivo | O que mostra |
-|---|---|
-| `docs/images/sala.png` | vista geral da sala de máquinas: luminárias, eletrocalhas, faixas de segurança e a fileira de estações |
-| `docs/images/clp.png` | painel **CLP-01** em falha, com HMI amarelo e o aviso "CLP FALHA" |
-| `docs/images/bomba.png` | conjunto **BOMBA-01** sobre base amarela com faixas pretas e o indicador **NÍVEL 42%** do tanque **TK-01** |
-| `docs/images/aria.png` | **terminal da ARIA** com a tela ciano e o símbolo que identifica a IA no laboratório |
+- **CLP:** ranhuras de ventilação (frontais e laterais), 4 LEDs de status que piscam em períodos
+  diferentes (`scripts/status_leds.gd` — o glTF não anima emissão de material) e tela com lógica Ladder.
+- **Painel de encaixe:** faixas zebradas, triângulo de alerta elétrico, esquema de fiação serigrafado
+  e marcação dos slots (`FUSÍVEL 12V` e `INTERACTION PORT RS-404`).
+- **Telas da área A:** conteúdo em português — `SISTEMA NEURAL ARIA: Operacional (v4.04)`,
+  `PROCESSAMENTO PREDITIVO: Análise de fluxo em andamento...`,
+  `REDE SINÁPTICA: Estabilidade do núcleo em 98.2%`, `MÓDULO DE APRENDIZADO: Otimizando rotinas
+  operacionais` e o easter egg `MÓDULO DESCARGA: Preciso ir ao banheiro`.
+- **Estação da bomba:** o cilindro de sucção ganhou postes com braçadeiras ancorando ao piso, base
+  reforçada com longarinas, travessas e parafusos sextavados, manômetro analógico com mostrador e
+  ponteiro, válvulas de alívio e anéis de desgaste nos tubos.
+- **Módulo RS-404:** PCB com capacitores, chips SMD, barramentos de pinos e conector.
+- **Bancada:** luminária pendente com lente emissiva iluminando a área do fusível F-17 — e um
+  **pato de borracha** amarelo ao lado dele (easter egg).
 
 #### Índice dos arquivos em `docs/images/`
 
 | Arquivo | Conteúdo |
 |---|---|
-| `aria.png` | terminal da ARIA |
-| `bomba.png` | conjunto motobomba e tanque |
-| `clp.png` | painel CLP-01 |
-| `sala.png` | vista geral da sala |
-| `laboratorio-exemplo.png` | referência de arte usada na reconstrução da sala |
-| `poc2-sala-emergencia.png` | sala em modo emergência (energia isolada) |
-| `poc2-sala-aria.png` | terminal da ARIA com o acento ciano |
+| `poc2-sala-geral.png` | sala com a energia isolada (início da missão) |
+| `poc2-sala-energizada.png` | sala com a energia restaurada (missão concluída) |
+| `poc2-clp.png` | CLP-01 com ranhuras, LEDs piscando e tela Ladder |
+| `poc2-painel.png` | painel de encaixe com decalques e rótulos dos slots |
+| `poc2-bomba.png` | estação da bomba ancorada ao piso, com manômetro e válvulas |
+| `poc2-aria.png` | estação da ARIA com a tela ciano e a leitura do núcleo |
+| `poc2-bancada.png` | bancada com luminária pendente e o fusível F-17 |
 | `poc2-porta-b1-fechada.png` | porta B1 travada |
 | `poc2-porta-b1-aberta.png` | porta B1 aberta (vão livre) |
 | `poc2-tecnico.png` | técnico de campo (corpo inteiro) |
 | `poc2-tecnico-rosto.png` | rosto do técnico em detalhe |
+| `poc2-detalhe-clp.png` | CLP em close: ranhuras, LEDs e tela |
+| `poc2-detalhe-painel.png` | painel em close: decalques e rótulos |
+| `poc2-detalhe-telas.png` | telas de IA da sala de controle |
+| `poc2-detalhe-bomba.png` | bomba em close: base, braçadeiras e manômetro |
+| `poc3-aria-terminal-resposta.png` | terminal da ARIA com pergunta e resposta do modelo local |
+| `poc3-aria-tela-estacao.png` | tela 3D da estação ARIA com a leitura do núcleo |
+| `laboratorio-exemplo.png` | referência de arte usada na reconstrução da sala |
 
 ### Como regerar as capturas
 
 ```bash
-# vista da sala (pose = x,y,z, yaw em graus)
-LAB404_SHOT_PATH=$HOME/sala.png LAB404_SHOT_POSE="0,0.05,2,0" \
+# vista da sala, energia isolada (pose = x,y,z, yaw[, pitch])
+LAB404_SHOT_PATH=$HOME/poc2-sala-geral.png LAB404_SHOT_POSE="0,0.05,2,0" \
     godot4 --path . res://tests/screenshot.tscn
 
-# estado final: missão concluída, energia restaurada e porta aberta
-LAB404_SHOT_PATH=$HOME/final.png LAB404_SHOT_POSE="8,0.05,3,-90" LAB404_SHOT_FINISH=1 \
+# mesma vista com a missão concluída: energia restaurada, porta aberta e câmera ativa
+LAB404_SHOT_PATH=$HOME/poc2-sala-energizada.png LAB404_SHOT_POSE="0,0.05,2,0" \
+    LAB404_SHOT_FINISH=1 godot4 --path . res://tests/screenshot.tscn
+
+# estação da ARIA (2,4 m à frente do console)
+LAB404_SHOT_PATH=$HOME/poc2-aria.png LAB404_SHOT_POSE="5,0.05,5.2,180" \
     godot4 --path . res://tests/screenshot.tscn
 ```
 
