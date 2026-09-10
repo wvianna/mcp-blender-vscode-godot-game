@@ -1,0 +1,39 @@
+# --- Blender ---
+# Arquivos de backup criados pelo Blender
+*.blend1
+*.blend2
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Ambiente virtual / dependências ---
+.venv/
+venv/
+env/
+
+# --- Editores / SO ---
+.vscode/*
+!.vscode/mcp.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Render temporário / sequências de imagem ---
+render/
+frames/
+*.png.tmp
+
+# --- Godot 4 ---
+# Cache do editor e artefatos importados
+.godot/
+# Builds exportados
+export/
+build/
+# Logs
+*.log
+
+# --- Execução local (start.sh / stop.sh) ---
+.run/

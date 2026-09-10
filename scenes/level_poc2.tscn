@@ -1,0 +1,194 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/lab_setup.gd" id="1_lab"]
+[ext_resource type="PackedScene" path="res://assets/lab404/lab_sala_poc2.glb" id="2_glb"]
+[ext_resource type="Script" path="res://scripts/world_events.gd" id="3_events"]
+[ext_resource type="Script" path="res://scripts/vertical_slice.gd" id="4_slice"]
+[ext_resource type="Script" path="res://scripts/security_camera.gd" id="5_cam"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_cam"]
+size = Vector3(0.24, 0.2, 0.28)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cam"]
+albedo_color = Color(0.09, 0.09, 0.1, 1)
+roughness = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_lens"]
+top_radius = 0.06
+bottom_radius = 0.06
+height = 0.06
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lens"]
+albedo_color = Color(0.1, 0.2, 0.3, 1)
+emission_enabled = true
+emission = Color(0.3, 0.8, 1, 1)
+emission_energy_multiplier = 1.6
+
+[node name="Level" type="Node3D"]
+script = ExtResource("1_lab")
+
+[node name="WorldEvents" type="Node" parent="."]
+script = ExtResource("3_events")
+lights_path = NodePath("../Lights")
+
+[node name="VerticalSlice" type="Node3D" parent="."]
+script = ExtResource("4_slice")
+
+[node name="LabGLB" parent="." instance=ExtResource("2_glb")]
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="ENV_Luz_Controle_A" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2.85, -1.5)
+light_energy = 2.4
+omni_range = 8.0
+
+[node name="ENV_Luz_Controle_B" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.85, -1.5)
+light_energy = 2.4
+omni_range = 8.0
+
+[node name="ENV_Luz_Controle_C" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.85, -1.5)
+light_energy = 2.4
+omni_range = 8.0
+
+[node name="ENV_Luz_Tanque" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.85, -1.5)
+light_energy = 2.4
+omni_range = 8.0
+
+[node name="ENV_Luz_Corredor" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.2, 2.9, 3)
+light_energy = 2.0
+omni_range = 10.0
+
+[node name="ENV_Luz_Processo" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.85, -1.5)
+light_energy = 2.4
+omni_range = 8.0
+
+[node name="ENV_Luz_Entrada" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2.6, 7.0)
+light_energy = 1.6
+omni_range = 8.0
+
+[node name="Accents" type="Node3D" parent="."]
+
+[node name="ENV_Luz_Emg_A" type="OmniLight3D" parent="Accents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.8, 2.45, 5.4)
+light_color = Color(1, 0.16, 0.12, 1)
+light_energy = 2.2
+omni_range = 4.5
+
+[node name="ENV_Luz_Emg_B" type="OmniLight3D" parent="Accents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 2.45, -5.4)
+light_color = Color(1, 0.16, 0.12, 1)
+light_energy = 2.2
+omni_range = 4.5
+
+[node name="ENV_Luz_Emg_C" type="OmniLight3D" parent="Accents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.0, 2.0, 2.4)
+light_color = Color(1, 0.16, 0.12, 1)
+light_energy = 2.0
+omni_range = 3.5
+
+[node name="FX_Luz_ARIA" type="OmniLight3D" parent="Accents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.5, 7.2)
+light_color = Color(0.3, 0.7, 1, 1)
+light_energy = 2.0
+omni_range = 4.0
+
+[node name="FX_Luz_Painel" type="OmniLight3D" parent="Accents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -7.2)
+light_color = Color(0.4, 0.95, 0.7, 1)
+light_energy = 1.8
+omni_range = 4.0
+
+[node name="FX_Luz_Bomba" type="OmniLight3D" parent="Accents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.35, -4.7)
+light_color = Color(1, 0.58, 0.14, 1)
+light_energy = 2.0
+omni_range = 3.5
+
+[node name="FX_Luz_Controle" type="OmniLight3D" parent="Accents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.4, 2.9, -6.0)
+light_color = Color(0.28, 0.68, 1, 1)
+light_energy = 2.0
+omni_range = 4.5
+
+[node name="Labels" type="Node3D" parent="."]
+
+[node name="DEC_Lbl_TK01" type="Label3D" parent="Labels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.95, -3.7)
+pixel_size = 0.004
+billboard = 1
+outline_size = 12
+text = "TK-01"
+font_size = 64
+
+[node name="DEC_Lbl_Nivel" type="Label3D" parent="Labels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.25, 1.15, -4.5)
+pixel_size = 0.003
+billboard = 1
+outline_size = 10
+modulate = Color(0.45, 0.9, 1, 1)
+text = "NÍVEL 42%"
+font_size = 48
+
+[node name="DEC_Lbl_PLC01" type="Label3D" parent="Labels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.15, 1.95, 2.0)
+pixel_size = 0.0035
+billboard = 1
+outline_size = 10
+text = "PLC-01"
+font_size = 56
+
+[node name="DEC_Lbl_Bomba" type="Label3D" parent="Labels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.8, -4.6)
+pixel_size = 0.003
+billboard = 1
+outline_size = 10
+modulate = Color(1, 0.78, 0.35, 1)
+text = "BOMBA-01"
+font_size = 44
+
+[node name="DEC_Lbl_B1" type="Label3D" parent="Labels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.55, 1.15, 3.45)
+pixel_size = 0.0035
+billboard = 1
+outline_size = 12
+text = "B1"
+font_size = 56
+
+[node name="DEC_Lbl_ARIA" type="Label3D" parent="Labels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.98, 7.55)
+pixel_size = 0.0035
+billboard = 1
+outline_size = 12
+modulate = Color(0.5, 0.85, 1, 1)
+text = "ARIA"
+font_size = 56
+
+[node name="DEC_Lbl_Setor" type="Label3D" parent="Labels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.85, 2.2, 3)
+pixel_size = 0.004
+billboard = 1
+outline_size = 10
+modulate = Color(0.85, 0.75, 0.4, 1)
+text = "SETOR B"
+font_size = 48
+
+[node name="CAM_Security" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.85, 7.55)
+script = ExtResource("5_cam")
+target_path = NodePath("../../Player")
+
+[node name="Body" type="MeshInstance3D" parent="CAM_Security"]
+mesh = SubResource("BoxMesh_cam")
+material_override = SubResource("StandardMaterial3D_cam")
+
+[node name="Lens" type="MeshInstance3D" parent="CAM_Security"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.16)
+mesh = SubResource("CylinderMesh_lens")
+material_override = SubResource("StandardMaterial3D_lens")

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/poc3_test.gd" id="1_poc3_test"]
+
+[node name="Poc3Test" type="Node"]
+script = ExtResource("1_poc3_test")

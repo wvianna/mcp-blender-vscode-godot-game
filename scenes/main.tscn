@@ -1,0 +1,54 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/level_poc2.tscn" id="2_level"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/pause_menu.tscn" id="5_pause_menu"]
+[ext_resource type="PackedScene" path="res://scenes/input_test.tscn" id="6_input_test"]
+[ext_resource type="PackedScene" path="res://scenes/aria_terminal.tscn" id="7_aria_terminal"]
+[ext_resource type="Script" path="res://scripts/tutorial.gd" id="8_tutorial"]
+[ext_resource type="PackedScene" path="res://scenes/epilogue.tscn" id="9_epilogue"]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.04, 0.05, 0.06, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.34, 0.4, 0.52, 1)
+ambient_light_energy = 0.22
+fog_enabled = true
+fog_light_color = Color(0.06, 0.09, 0.13, 1)
+fog_light_energy = 0.8
+fog_density = 0.012
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, 0, 0.5, 0.383, 0.6428, -0.663, -0.321, 0.766, 0.5565, 0, 6, 0)
+light_color = Color(0.62, 0.7, 0.86, 1)
+light_energy = 0.18
+shadow_enabled = true
+
+[node name="Level" parent="." instance=ExtResource("2_level")]
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" parent="UI" instance=ExtResource("4_hud")]
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("5_pause_menu")]
+
+[node name="InputTest" parent="UI" instance=ExtResource("6_input_test")]
+
+[node name="ARIATerminal" parent="UI" instance=ExtResource("7_aria_terminal")]
+
+[node name="Epilogue" parent="UI" instance=ExtResource("9_epilogue")]
+
+[node name="Tutorial" type="Node" parent="."]
+script = ExtResource("8_tutorial")
