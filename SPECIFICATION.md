@@ -188,7 +188,7 @@ Formato **DADO / QUANDO / ENTÃO**, incluindo casos de erro.
 
 ## 10. Estado de validação (2026-09-10)
 
-Suíte: `tests/run_all.sh` (Godot headless + Python). **209 verificações Godot + 16 testes Python, todas PASS.**
+Suíte: `tests/run_all.sh` (Godot headless + Python). **211 verificações Godot + 16 testes Python, todas PASS.**
 
 | Critério | Evidência | Status |
 |---|---|---|

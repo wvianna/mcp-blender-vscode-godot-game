@@ -61,13 +61,13 @@ flowchart LR
 
 ## Testing
 
-Fonte de verdade: `docs/TESTES.md`. Níveis de evidência: **LOCAL** (atual — POC 1–6 com 209 verificações Godot + 16 do adapter, todas PASS), **CI**, **STAGING**, **PRODUÇÃO**.
+Fonte de verdade: `docs/TESTES.md`. Níveis de evidência: **LOCAL** (atual — POC 1–6 com 211 verificações Godot + 16 do adapter, todas PASS), **CI**, **STAGING**, **PRODUÇÃO**.
 
 Comandos:
 - `tests/run_all.sh` — suíte completa: POC 1–6 (Godot headless) + `tests/test_aria_adapter.py` (venv).
 - `godot4 --headless --path . res://tests/pocN_test.tscn` — uma cena de teste isolada.
 - `LAB404_SHOT_PATH=$HOME/lab404.png godot4 --path . res://tests/screenshot.tscn` — evidência visual + FPS.
-  Variáveis extras: `LAB404_SHOT_POSE="x,y,z,yaw"` (posiciona o jogador antes da captura) e `LAB404_SHOT_DUMP=1` (imprime luzes/letreiros/câmera).
+  Variáveis extras: `LAB404_SHOT_POSE="x,y,z,yaw"` (posiciona o jogador antes da captura), `LAB404_SHOT_DUMP=1` (imprime luzes/letreiros/câmera) e `LAB404_SHOT_FINISH=1` (conclui a missão, liga a energia e abre a porta — evidência do estado final).
 - Smoke: `godot4 --headless --path . --quit-after 240`.
 - Adapter: `.venv/bin/uvicorn scripts.aria_adapter:app --port 8000`; testes: `.venv/bin/python tests/test_aria_adapter.py`.
 

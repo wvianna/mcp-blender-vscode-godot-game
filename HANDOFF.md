@@ -9,7 +9,7 @@ Projeto de jogo 3D (Blender + Godot 4 + Ollama) que será implementado em 6 POCs
 ## Estado atual
 
 - **POC 1 a POC 6 implementados e testados** (2026-09-10): jogo jogável da chegada ao epílogo, com sala Blender (GLB), ARIA local (adapter + terminal), NPC/memória/eventos, laboratório procedural (asa final) e save/load.
-- Suíte automatizada: 209 verificações Godot (POC 1–6, inclui iluminação/letreiros/câmera de segurança no POC 2) + 16 testes do adapter Python — todas PASS.
+- Suíte automatizada: 211 verificações Godot (POC 1–6, inclui iluminação/letreiros/câmera de segurança/porta no POC 2) + 16 testes do adapter Python — todas PASS.
 - Pendências reais: hardware (joystick PS1/mouse), Ollama com modelo real e empacotamento (templates).
 
 ## Alterações realizadas nesta sessão

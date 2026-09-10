@@ -20,25 +20,16 @@ func _ready() -> void:
     add_child(main)
     await get_tree().process_frame
 
+    # O jogo captura o mouse; numa captura de tela isso giraria a vista sem controle.
+    Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
     match OS.get_environment("LAB404_SHOT_VIEW"):
         "input_test":
             main.get_node("UI/InputTest").visible = true
         "terminal":
             main.get_node("UI/ARIATerminal").open()
 
-    # Pose opcional: "x,y,z,yaw_graus" (para evidenciar setores específicos da sala).
-    var pose := OS.get_environment("LAB404_SHOT_POSE")
-    if not pose.is_empty():
-        var partes := pose.split(",")
-        var jogador = main.get_node_or_null("Player")
-        if partes.size() == 4 and jogador != null:
-            jogador.global_position = Vector3(float(partes[0]), float(partes[1]), float(partes[2]))
-            jogador.rotation.y = deg_to_rad(float(partes[3]))
-            if jogador is CharacterBody3D:
-                jogador.velocity = Vector3.ZERO
-            print("LAB404-POSE: %s" % pose)
-        else:
-            push_warning("LAB404_SHOT_POSE inválida (use x,y,z,yaw) — ignorada")
+    _aplicar_pose(main)
 
     if OS.get_environment("LAB404_SHOT_FINISH") == "1":
         for passo in Lab404QuestManager.STEPS:
@@ -71,6 +62,9 @@ func _ready() -> void:
     for _i in 60:
         await get_tree().process_frame
 
+    # Reaplica a pose: garante que a captura saia exatamente do ponto de vista pedido.
+    _aplicar_pose(main)
+
     # Medição honesta de desempenho (NFR-001) enquanto a janela está visível.
     var frames_start := Engine.get_frames_drawn()
     var start_ms := Time.get_ticks_msec()
@@ -88,3 +82,19 @@ func _ready() -> void:
     var err := image.save_png(out)
     print("LAB404-SHOT: %s (erro=%d) %dx%d" % [out, err, image.get_width(), image.get_height()])
     get_tree().quit(0 if err == OK else 1)
+
+## Pose opcional do jogador: `LAB404_SHOT_POSE="x,y,z,yaw_graus"`.
+func _aplicar_pose(main: Node) -> void:
+    var pose := OS.get_environment("LAB404_SHOT_POSE")
+    if pose.is_empty():
+        return
+    var partes := pose.split(",")
+    var jogador = main.get_node_or_null("Player")
+    if partes.size() != 4 or jogador == null:
+        push_warning("LAB404_SHOT_POSE inválida (use x,y,z,yaw) — ignorada")
+        return
+    jogador.global_position = Vector3(float(partes[0]), float(partes[1]), float(partes[2]))
+    jogador.rotation.y = deg_to_rad(float(partes[3]))
+    if jogador is CharacterBody3D:
+        jogador.velocity = Vector3.ZERO
+    print("LAB404-POSE: %s" % pose)

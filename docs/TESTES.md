@@ -6,7 +6,7 @@
 tests/run_all.sh    # POC 1–6 (Godot headless) + adapter Python (venv)
 ```
 
-Resultado de referência (2026-09-10): POC 1 (77), POC 2 (32), POC 3 (25 com adapter no ar / 26 com
+Resultado de referência (2026-09-10): POC 1 (77), POC 2 (34), POC 3 (25 com adapter no ar / 26 com
 adapter desligado), POC 4 (21), POC 5 (23) e POC 6 (30) verificações + 16 testes Python — **todas PASS**.
 
 > O POC 3 adapta-se ao ambiente: com o adapter/Ollama **desligado** valida o caminho de fallback (2 verificações);
@@ -55,6 +55,9 @@ abertura da porta, conclusão da missão, serialização de estado — e a camad
 gerais alinhadas à fileira central do GLB, acentos por zona com cores distintas, letreiros
 `Label3D` das estações (TK-01, NÍVEL 42%, PLC-01, BOMBA-01, B1, ARIA) e câmera de segurança que
 gira na direção do jogador após a energia voltar (FR-015a/FR-024a/FR-024b).
+
+Cobre também a porta do corredor: as três malhas da folha são filhas do nó da porta e sobem
+junto com ela quando abre (FR-011) — regressão do defeito "a porta abre, mas o visual fica no vão".
 
 Evidência visual (fora da suíte headless):
 

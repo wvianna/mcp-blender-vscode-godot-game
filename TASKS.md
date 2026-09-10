@@ -56,7 +56,7 @@ Requisitos e critérios referenciam `SPECIFICATION.md`.
 - [x] **T-032** Epílogo com escolha (seguir/questionar/reiniciar núcleo) — FR-032
 - [!] **T-033** Empacotamento e demonstração sem intervenção — FR-033 (bloqueada: export templates ausentes; `export_presets.cfg` pronto)
 
-**Evidência POC 2–6 (2026-09-10):** `tests/run_all.sh` → POC 2 (32, inclui iluminação em camadas/letreiros/câmera de segurança), POC 3 (26), POC 4 (21), POC 5 (23), POC 6 (30) verificações + 16 testes Python do adapter, todas PASS. ARIA real validada com Ollama local (`llama3.1:8b`, intent `DIAGNOSE`, 22 s). Pendências MANUAIS: hardware real (joystick/mouse), `llama3.2:3b` e playthrough humano (`docs/ROTEIRO_DEMO.md`).
+**Evidência POC 2–6 (2026-09-10):** `tests/run_all.sh` → POC 2 (34, inclui iluminação em camadas/letreiros/câmera de segurança/porta com folha), POC 3 (26), POC 4 (21), POC 5 (23), POC 6 (30) verificações + 16 testes Python do adapter, todas PASS. ARIA real validada com Ollama local (`llama3.1:8b`, intent `DIAGNOSE`, 22 s). Pendências MANUAIS: hardware real (joystick/mouse), `llama3.2:3b` e playthrough humano (`docs/ROTEIRO_DEMO.md`).
 
 ## Entregáveis e aceite
 

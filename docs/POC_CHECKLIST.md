@@ -17,6 +17,7 @@
 - [x] identidade visual (infraestrutura de teto, faixas, bancada, tanque TK-01, bomba, sala de controle, passarela e escada)
 - [x] iluminação em camadas (luz geral claro/emergência + acentos por zona, alinhados às luminárias visíveis)
 - [x] letreiros `Label3D` das estações e câmera de segurança que acompanha o jogador (`FR-015a`/`FR-024a`/`FR-024b`)
+- [x] porta com trava (folha, moldura e detalhes andam juntos ao abrir — `FR-011`)
 - [x] interação (`Lab404Interactable` + raycast + prompt)
 - [x] inventário (kit técnico no HUD)
 - [x] missão (`RESTAURAR_COMUNICACAO`, 6 passos)

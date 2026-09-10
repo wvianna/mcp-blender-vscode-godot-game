@@ -4,7 +4,7 @@ Projeto experimental de um jogo 3D educacional/ficcional que combina **Blender +
 
 > Objetivo do projeto: começar com um protótipo pequeno (POC 1) e chegar a um jogo em que uma **IA local participa organicamente do mundo** — dando dicas, comentando o estado do laboratório e reagindo ao jogador — sem nunca controlar o jogo.
 
-**Atalhos:** [Objetivo do jogo](#objetivo-do-jogo) · [Missão em 6 passos](#missão-em-6-passos) · [Tecnologias](#tecnologias-usadas) · [Roadmap](#roadmap-poc-1--poc-6) · [Como executar](#como-executar) · [Testes](#testes) · [Arquitetura](#arquitetura) · [Estrutura do projeto](#estrutura-do-projeto)
+**Atalhos:** [Objetivo do jogo](#objetivo-do-jogo) · [Missão em 6 passos](#missão-em-6-passos) · [Tecnologias](#tecnologias-usadas) · [Roadmap](#roadmap-poc-1--poc-6) · [Como executar](#como-executar) · [Testes](#testes) · [Arquitetura](#arquitetura) · [Estrutura do projeto](#estrutura-do-projeto) · [Galeria visual](#galeria-visual)
 
 ## Objetivo do jogo
 
@@ -46,6 +46,15 @@ flowchart TD
 
 > **Como ler:** os seis primeiros nós são a missão `RESTAURAR_COMUNICACAO` (`Lab404QuestManager`). Os passos só podem ser concluídos **em ordem** — a porta do corredor só abre depois de tudo funcionar. O que vem depois é a escalada narrativa do POC 6.
 
+**Passo 6 — antes e depois (capturas do próprio jogo):**
+
+<p>
+  <img src="docs/images/poc2-porta-b1-fechada.png" alt="Porta B1 fechada, com o aviso PORTA TRAVADA" width="49%">
+  <img src="docs/images/poc2-porta-b1-aberta.png" alt="Porta B1 aberta, mostrando o corredor livre" width="49%">
+</p>
+
+*Esquerda:* porta travada (energia isolada, aviso `[E] PORTA TRAVADA`). *Direita:* porta aberta (missão concluída, vão livre para o corredor/setor B). A folha da porta é feita de várias malhas no GLB: no Blender elas são filhas do objeto da porta, então a **colisão e o visual sobem juntos** (`scripts/door.gd`).
+
 ### Controles
 
 | Ação | Teclado / mouse | Joystick PS1→USB |
@@ -80,7 +89,7 @@ Detalhes em `docs/NARRATIVA.md`.
 | IA conversacional | **Ollama** (local) | alvo `llama3.2:3b`; medido com `llama3.1:8b` | gera as respostas de ARIA — só texto e intenção |
 | Adapter de IA | **Python + FastAPI + uvicorn + pydantic** | Python 3.12 | valida a entrada, injeta contexto e chama o Ollama (`POST /chat`) |
 | Cliente HTTP | `HTTPRequest` no Godot (`AriaClient`) | — | timeout de 35 s, fallback e intents restritas |
-| Testes | **Godot headless** + **Python** + bash | — | 209 verificações Godot e 16 testes do adapter |
+| Testes | **Godot headless** + **Python** + bash | — | 211 verificações Godot e 16 testes do adapter |
 | Evidência visual | `tests/screenshot.tscn` | — | mede FPS e salva prints das vistas da sala |
 | Desenvolvimento | **VS Code + GitHub Copilot** | — | o agente especifica, implementa, testa e documenta |
 | Controle | teclado/mouse + **joystick USB de PS1** | — | Input Map semântico (proibido índice de botão) |
@@ -113,7 +122,7 @@ timeline
 
 ## Estado atual
 
-**POC 1 a POC 6 implementados e testados** (2026-09-10): jogo jogável da chegada ao epílogo, com sala modelada no Blender (248 objetos, iluminação em camadas e letreiros), ARIA local (Ollama), NPC/memória/eventos, laboratório procedural e save/load. Suíte automatizada: **209 verificações Godot + 16 testes Python, todas PASS**. Veja `STATUS.md`, `TASKS.md` e `HANDOFF.md`.
+**POC 1 a POC 6 implementados e testados** (2026-09-10): jogo jogável da chegada ao epílogo, com sala modelada no Blender (248 objetos, iluminação em camadas e letreiros), ARIA local (Ollama), NPC/memória/eventos, laboratório procedural e save/load. Suíte automatizada: **211 verificações Godot + 16 testes Python, todas PASS**. Veja `STATUS.md`, `TASKS.md` e `HANDOFF.md` — e as capturas em [Galeria visual](#galeria-visual).
 
 ## Documentação de desenvolvimento (SDD)
 
@@ -185,7 +194,7 @@ Demonstração manual passo a passo: `docs/ROTEIRO_DEMO.md`.
 flowchart LR
     A["tests/run_all.sh"] --> B["Godot headless<br/>tests/poc1..6_test.tscn"]
     A --> C["Python (venv)<br/>tests/test_aria_adapter.py"]
-    B --> D["208–209 verificações<br/>+ FPS quando há display"]
+    B --> D["210–211 verificações<br/>+ FPS quando há display"]
     C --> E["16 testes do adapter"]
     D --> F{"alguma falha?"}
     E --> F
@@ -196,7 +205,7 @@ flowchart LR
 | Suíte | Verificações | O que cobre |
 |---|---|---|
 | `tests/poc1_test.gd` | 77 | input (teclado/joystick/deadzone), movimento, colisão, câmera, pausa, HUD |
-| `tests/poc2_test.gd` | 32 | sala do Blender, interação, inventário, missão, luzes/letreiros/câmera de segurança |
+| `tests/poc2_test.gd` | 34 | sala do Blender, interação, inventário, missão, luzes/letreiros/câmera de segurança e porta (folha + visual juntos) |
 | `tests/poc3_test.gd` | 25–26 | intents restritas, timeout, fallback, terminal (varia conforme o adapter está no ar) |
 | `tests/poc4_test.gd` | 21 | NPC reativo, memória, luzes por energia, tom da ARIA |
 | `tests/poc5_test.gd` | 23 | determinismo por seed e conectividade da ala procedural |
@@ -415,6 +424,43 @@ lab404/
 | mundo reativo (luzes, NPC, memória, tom) | `scripts/world_events.gd`, `scripts/npc.gd`, `scripts/memory_store.gd` |
 | HUD, menus e terminal | `scenes/hud.tscn`, `scripts/hud.gd`, `scripts/aria_terminal.gd` |
 | testes e evidências | `tests/` + `docs/TESTES.md` |
+
+## Galeria visual
+
+Todas as imagens abaixo são capturas reais do jogo (`tests/screenshot.tscn`, 1280×720, 60 FPS em iGPU).
+
+<p>
+  <img src="docs/images/poc2-sala-emergencia.png" alt="Sala do Laboratório 404 com iluminação de emergência" width="49%">
+  <img src="docs/images/poc2-sala-aria.png" alt="Terminal da ARIA iluminado em ciano" width="49%">
+</p>
+
+**Esquerda — energia isolada (início):** luz geral fraca e azulada, beacons vermelhos acesos, uma luminária piscando e os acentos de zona (ARIA em ciano, painel em verde, bomba em âmbar).
+**Direita — terminal da ARIA:** o brilho ciano identifica a IA no laboratório; é aqui que o jogador conversa com ela (LLM local via Ollama).
+
+<p>
+  <img src="docs/images/poc2-porta-b1-fechada.png" alt="Porta B1 fechada" width="49%">
+  <img src="docs/images/poc2-porta-b1-aberta.png" alt="Porta B1 aberta" width="49%">
+</p>
+
+**Porta B1 — antes e depois:** a folha desliza para dentro do batente e o visual acompanha a colisão; nenhum elemento gráfico fica no vão.
+
+### Como regerar as capturas
+
+```bash
+# vista da sala (pose = x,y,z, yaw em graus)
+LAB404_SHOT_PATH=$HOME/sala.png LAB404_SHOT_POSE="0,0.05,2,0" \
+    godot4 --path . res://tests/screenshot.tscn
+
+# estado final: missão concluída, energia restaurada e porta aberta
+LAB404_SHOT_PATH=$HOME/final.png LAB404_SHOT_POSE="8,0.05,3,-90" LAB404_SHOT_FINISH=1 \
+    godot4 --path . res://tests/screenshot.tscn
+```
+
+### Referência de arte
+
+Imagem que guiou a reconstrução da sala (junto de `docs/Detalhamento do Ambiente 3D — Laboratório 404.md`):
+
+![Referência de arte da sala do Laboratório 404](docs/images/laboratorio-exemplo.png)
 
 ## Licença
 
