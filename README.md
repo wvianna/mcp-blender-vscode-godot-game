@@ -84,7 +84,7 @@ Detalhes em `docs/NARRATIVA.md`.
 | Motor do jogo | **Godot** (renderer `gl_compatibility`) | 4.5 | gameplay, física, input, UI, áudio, cenas e save/load |
 | Linguagem do jogo | **GDScript** | Godot 4 | scripts com `class_name`, `@export` e sinais |
 | Assets 3D | **Blender** | 5.2.1 LTS | modelagem da sala, props, colisões (sufixo `-col`) e exportação |
-| Formato de asset | **GLB / glTF** | — | sala com 248 objetos e 24 materiais, 1 unidade = 1 m |
+| Formato de asset | **GLB / glTF** | — | sala com 245 objetos e 33 materiais, 1 unidade = 1 m |
 | Automação de assets | **Blender MCP** | — | o agente de IA modela e exporta **dentro** do Blender |
 | IA conversacional | **Ollama** (local) | alvo `llama3.2:3b`; medido com `llama3.1:8b` | gera as respostas de ARIA — só texto e intenção |
 | Adapter de IA | **Python + FastAPI + uvicorn + pydantic** | Python 3.12 | valida a entrada, injeta contexto e chama o Ollama (`POST /chat`) |
@@ -122,7 +122,7 @@ timeline
 
 ## Estado atual
 
-**POC 1 a POC 6 implementados e testados** (2026-09-10): jogo jogável da chegada ao epílogo, com sala modelada no Blender (248 objetos, iluminação em camadas e letreiros), ARIA local (Ollama), NPC/memória/eventos, laboratório procedural e save/load. Suíte automatizada: **211 verificações Godot + 16 testes Python, todas PASS**. Veja `STATUS.md`, `TASKS.md` e `HANDOFF.md` — e as capturas em [Galeria visual](#galeria-visual).
+**POC 1 a POC 6 implementados e testados** (2026-09-10): jogo jogável da chegada ao epílogo, com sala modelada no Blender (245 objetos, iluminação em camadas e letreiros), ARIA local (Ollama), NPC/memória/eventos, laboratório procedural e save/load. Suíte automatizada: **211 verificações Godot + 16 testes Python, todas PASS**. Veja `STATUS.md`, `TASKS.md` e `HANDOFF.md` — e as capturas em [Galeria visual](#galeria-visual).
 
 ## Documentação de desenvolvimento (SDD)
 
@@ -227,7 +227,7 @@ flowchart LR
     subgraph BLENDER["Blender 5.2"]
         direction TB
         MOD["Modelagem da sala<br/>props + colisões (-col)"]
-        GLB["lab_sala_poc2.glb<br/>248 objetos · 24 materiais"]
+        GLB["lab_sala_poc2.glb<br/>245 objetos · 33 materiais"]
     end
 
     subgraph GODOT["Godot 4.5 — runtime"]
@@ -443,6 +443,54 @@ Todas as imagens abaixo são capturas reais do jogo (`tests/screenshot.tscn`, 12
 </p>
 
 **Porta B1 — antes e depois:** a folha desliza para dentro do batente e o visual acompanha a colisão; nenhum elemento gráfico fica no vão.
+
+### O técnico (NPC do POC 4)
+
+<p>
+  <img src="docs/images/poc2-tecnico.png" alt="Técnico de campo com macacão, botas, luvas e capacete de obra" width="49%">
+  <img src="docs/images/poc2-tecnico-rosto.png" alt="Rosto do técnico: olhos, sobrancelhas, nariz e boca" width="49%">
+</p>
+
+O NPC que reage ao estado do laboratório (FR-022) ganhou corpo completo: macacão azul, colete com
+faixas refletivas, cinto com bolsa e fivela, luvas, botas, capacete de obra com lanterna e um rosto
+com olhos, sobrancelhas, nariz e boca. É **um único mesh** (882 vértices, 10 materiais) que também
+serve de volume de colisão — mesmo padrão dos demais objetos `-col` do GLB.
+
+### Estações do laboratório
+
+<p>
+  <img src="docs/images/sala.png" alt="Vista ampla da sala do Laboratório 404" width="49%">
+  <img src="docs/images/clp.png" alt="Painel CLP-01 em falha, com HMI amarelo" width="49%">
+</p>
+<p>
+  <img src="docs/images/bomba.png" alt="Conjunto motobomba BOMBA-01 com o indicador NÍVEL 42% do tanque TK-01" width="49%">
+  <img src="docs/images/aria.png" alt="Terminal da ARIA com a tela ciano e o lema ARIA ao lado" width="49%">
+</p>
+
+Da esquerda para a direita, de cima para baixo:
+
+| Arquivo | O que mostra |
+|---|---|
+| `docs/images/sala.png` | vista geral da sala de máquinas: luminárias, eletrocalhas, faixas de segurança e a fileira de estações |
+| `docs/images/clp.png` | painel **CLP-01** em falha, com HMI amarelo e o aviso "CLP FALHA" |
+| `docs/images/bomba.png` | conjunto **BOMBA-01** sobre base amarela com faixas pretas e o indicador **NÍVEL 42%** do tanque **TK-01** |
+| `docs/images/aria.png` | **terminal da ARIA** com a tela ciano e o símbolo que identifica a IA no laboratório |
+
+#### Índice dos arquivos em `docs/images/`
+
+| Arquivo | Conteúdo |
+|---|---|
+| `aria.png` | terminal da ARIA |
+| `bomba.png` | conjunto motobomba e tanque |
+| `clp.png` | painel CLP-01 |
+| `sala.png` | vista geral da sala |
+| `laboratorio-exemplo.png` | referência de arte usada na reconstrução da sala |
+| `poc2-sala-emergencia.png` | sala em modo emergência (energia isolada) |
+| `poc2-sala-aria.png` | terminal da ARIA com o acento ciano |
+| `poc2-porta-b1-fechada.png` | porta B1 travada |
+| `poc2-porta-b1-aberta.png` | porta B1 aberta (vão livre) |
+| `poc2-tecnico.png` | técnico de campo (corpo inteiro) |
+| `poc2-tecnico-rosto.png` | rosto do técnico em detalhe |
 
 ### Como regerar as capturas
 

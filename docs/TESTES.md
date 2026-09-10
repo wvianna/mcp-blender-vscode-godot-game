@@ -66,6 +66,8 @@ LAB404_SHOT_PATH=$HOME/sala.png LAB404_SHOT_POSE="0,0.05,2,0" \
     godot4 --path . res://tests/screenshot.tscn
 ```
 
+Capturas de referência versionadas: `docs/images/` (sala, CLP, bomba, ARIA, técnico e porta B1).
+
 - [ ] conferir no hardware: conforto da retícula e do alcance de interação (1,7 m)
 
 ## POC 3 — automatizado (`tests/poc3_test.gd` + `tests/test_aria_adapter.py`)
