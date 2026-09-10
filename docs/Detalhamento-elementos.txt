@@ -1,0 +1,45 @@
+Este texto técnico reestruturado utiliza terminologia de modelagem 3D e texturização no Blender para instruir o agente de IA a executar os detalhamentos de forma precisa:
+
+Diretrizes para Refinamento Gráfico e Modelagem 3D (Blender)
+
+1. CLP (Controlador Lógico Programável)
+
+Tela: Aplique um shader emissivo exibindo um display com 2 a 3 linhas claras de lógica Ladder (contatos NA/NF e bobinas).
+
+Estrutura: Modele ranhuras de ventilação lateral (cuts/bevel) na carcaça plástica.
+
+Sinalização: Configure os LEDs do painel frontal com nós de emissão de luz e keyframes de opacidade para simular oscilação/piscamento de status operacional.
+
+2. Prop da Mesa de Trabalho
+
+Easter Egg: Posicione o modelo 3D de um pato de borracha amarelo clássico sobre a mesa, próximo à área do fusível, criando um ponto de contraste visual.
+
+3. Estação Aria e Módulo RS404
+
+Microeletrônica: Adicione detalhes de geometria na PCB do módulo RS404, incluindo capacitores cilíndricos, circuitos integrados (chips SMD), barramentos de pinos e conectores visíveis.
+
+4. Telas da Área A (Interfaces de Inteligência Artificial)
+
+Localização e Conteúdo: Substitua os textos genéricos na interface da tela por conteúdos em português focados em IA e monitoramento:
+
+"SISTEMA NEURAL ARIA: Operacional (v4.04)"
+
+"PROCESSAMENTO PREDITIVO: Análise de fluxo em andamento..."
+
+"REDE SINÁPTICA: Estabilidade do núcleo em 98.2%"
+
+"MÓDULO DE APRENDIZADO: Otimizando rotinas operacionais"
+
+"MÓDULO DESCARGA: Preciso ir ao banheiro"
+
+5. Estação da Bomba Hidráulica
+
+Correção Estrutural: Estenda o cilindro horizontal flutuante, conectando-o fisicamente ao piso e ao chassi principal por meio de braçadeiras de fixação.
+
+Ancoragem: Modele uma base metálica reforçada presa ao chão por parafusos sextavados e porcas destacadas nas extremidades.
+
+Leitura Mecânica: Adicione um manômetro analógico (medidor de pressão), válvulas de alívio e dutos com mapeamento de desgaste metálico para evidenciar a função do equipamento.
+
+6. Painel de Encaixe de Módulos (Fusível e RS)
+
+Identificação Visual: Aplique decalques com sinalização industrial: faixas zebradas de segurança, ícone de alerta elétrico, esquemas de fiação serigrafados ao fundo e marcações nos slots ("FUSÍVEL - 12V" e "INTERACTION PORT - RS404").
