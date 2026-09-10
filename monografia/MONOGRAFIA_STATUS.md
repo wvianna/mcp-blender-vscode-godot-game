@@ -16,7 +16,7 @@ o que está pronto, o que falta e como reproduzir a compilação.
 
 | Item | Valor |
 |---|---|
-| PDF gerado | `monografia/main.pdf` — **69 páginas** (47 páginas de conteúdo, capítulos 1–8) |
+| PDF gerado | `monografia/monografia-laboratorio-404.pdf` (cópia de distribuição; `main.pdf` é o artefato de compilação) — **69 páginas** (47 páginas de conteúdo, capítulos 1–8) |
 | Erros fatais | 0 |
 | Citações indefinidas | 0 |
 | Referências indefinidas | 0 |

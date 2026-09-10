@@ -36,8 +36,10 @@ grep -c "Overfull \\\\hbox" main.log 2>/dev/null | sed 's/^/Overfull hbox: /' ||
 grep -c "LaTeX Warning: Citation" main.log 2>/dev/null | sed 's/^/Citações indefinidas: /' || true
 grep -c "LaTeX Warning: Reference" main.log 2>/dev/null | sed 's/^/Referências indefinidas: /' || true
 if [ -f main.pdf ]; then
+    cp -f main.pdf artigo-laboratorio-404.pdf
     pages=$(pdfinfo main.pdf 2>/dev/null | awk '/^Pages/{print $2}')
     echo "PDF: main.pdf (${pages:-?} páginas)"
+    echo "Cópia de distribuição: artigo-laboratorio-404.pdf"
 else
     echo "PDF não gerado — ver main.log" >&2
     exit 1

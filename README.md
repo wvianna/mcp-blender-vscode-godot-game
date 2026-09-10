@@ -4,7 +4,7 @@ Projeto experimental de um jogo 3D educacional/ficcional que combina **Blender +
 
 > Objetivo do projeto: começar com um protótipo pequeno (POC 1) e chegar a um jogo em que uma **IA local participa organicamente do mundo** — dando dicas, comentando o estado do laboratório e reagindo ao jogador — sem nunca controlar o jogo.
 
-**Atalhos:** [Objetivo do jogo](#objetivo-do-jogo) · [Missão em 6 passos](#missão-em-6-passos) · [Tecnologias](#tecnologias-usadas) · [Roadmap](#roadmap-poc-1--poc-6) · [Como executar](#como-executar) · [Testes](#testes) · [Arquitetura](#arquitetura) · [Estrutura do projeto](#estrutura-do-projeto) · [Vídeo de demonstração](#vídeo-de-demonstração) · [Galeria visual](#galeria-visual)
+**Atalhos:** [Objetivo do jogo](#objetivo-do-jogo) · [Missão em 6 passos](#missão-em-6-passos) · [Tecnologias](#tecnologias-usadas) · [Roadmap](#roadmap-poc-1--poc-6) · [Como executar](#como-executar) · [Testes](#testes) · [Arquitetura](#arquitetura) · [Estrutura do projeto](#estrutura-do-projeto) · [Vídeo de demonstração](#vídeo-de-demonstração) · [Galeria visual](#galeria-visual) · [Produção acadêmica](#produção-acadêmica)
 
 ## Objetivo do jogo
 
@@ -122,7 +122,7 @@ timeline
 
 ## Estado atual
 
-**POC 1 a POC 6 implementados e testados** (2026-09-10): jogo jogável da chegada ao epílogo, com sala modelada no Blender (245 objetos, iluminação em camadas e letreiros), ARIA local (Ollama), NPC/memória/eventos, laboratório procedural e save/load. Suíte automatizada: **211 verificações Godot + 16 testes Python, todas PASS**. Veja `STATUS.md`, `TASKS.md` e `HANDOFF.md` — e as capturas em [Galeria visual](#galeria-visual).
+**POC 1 a POC 6 implementados e testados** (2026-09-10): jogo jogável da chegada ao epílogo, com sala modelada no Blender (342 objetos, iluminação em camadas e letreiros), ARIA local (Ollama), NPC/memória/eventos, laboratório procedural e save/load. Suíte automatizada: **211 verificações Godot + 16 testes Python, todas PASS**. Veja `STATUS.md`, `TASKS.md` e `HANDOFF.md` — as capturas em [Galeria visual](#galeria-visual) e os documentos em [Produção acadêmica](#produção-acadêmica).
 
 ## Documentação de desenvolvimento (SDD)
 
@@ -405,8 +405,8 @@ a arquitetura técnica em `docs/ARQUITETURA.md`.
 
 ```text
 lab404/
-├── artigo/            # artigo científico/tecnológico em LaTeX (build.sh + main.pdf)
-├── monografia/        # monografia de graduação em LaTeX (memoir + ABNT)
+├── artigo/            # artigo científico/tecnológico em LaTeX (build.sh + artigo-laboratorio-404.pdf)
+├── monografia/        # monografia de graduação em LaTeX (memoir + ABNT + monografia-laboratorio-404.pdf)
 ├── assets/            # GLB exportado do Blender (assets/ASSET_LIST.md)
 ├── config/            # Input Map documentado + personalidade da ARIA
 ├── design/            # conceito visual e level design
@@ -574,6 +574,28 @@ LAB404_SHOT_PATH=$HOME/poc2-aria.png LAB404_SHOT_POSE="5,0.05,5.2,180" \
 Imagem que guiou a reconstrução da sala (junto de `docs/Detalhamento do Ambiente 3D — Laboratório 404.md`):
 
 ![Referência de arte da sala do Laboratório 404](docs/images/laboratorio-exemplo.png)
+
+## Produção acadêmica
+
+O projeto gerou dois documentos acadêmicos completos, escritos em LaTeX, com
+fontes versionadas no repositório e PDFs compilados:
+
+| Documento | PDF | Fontes | Escopo |
+|---|---|---|---|
+| **Monografia** — *Laboratório 404: desenvolvimento de um jogo sério 3D com inteligência artificial local para apoio ao ensino de automação industrial* (IFF, 69 páginas) | [`monografia/monografia-laboratorio-404.pdf`](monografia/monografia-laboratorio-404.pdf) | [`monografia/`](monografia/) | Estudo completo: fundamentação teórica, trabalhos relacionados, materiais e métodos, desenvolvimento, experimentos e resultados, discussão, conclusão e apêndices |
+| **Artigo** — *Laboratório 404: um jogo 3D educacional com uma IA local restrita ao mundo* (12 páginas) | [`artigo/artigo-laboratorio-404.pdf`](artigo/artigo-laboratorio-404.pdf) | [`artigo/`](artigo/) | Versão condensada para submissão: arquitetura, processo incremental e validação automatizada |
+
+Para regenerar os PDFs (requer TeX Live com `pdflatex` e `bibtex`):
+
+```bash
+(cd monografia && ./build.sh)   # main.pdf + monografia-laboratorio-404.pdf
+(cd artigo && ./build.sh)       # main.pdf + artigo-laboratorio-404.pdf
+```
+
+> Os dois documentos usam apenas números verificáveis do próprio repositório
+> (suíte de testes, medições de desempenho e latência, assets inspecionados) e
+> marcam explicitamente as informações ausentes — nada é estimado ou inventado.
+> Cada pasta traz um README próprio com a estrutura e as pendências declaradas.
 
 ## Licença
 

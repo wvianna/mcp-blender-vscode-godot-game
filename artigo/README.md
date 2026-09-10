@@ -40,6 +40,8 @@ artigo/
 └── main.pdf            # gerado pela compilação
 ```
 
+O `build.sh` gera ainda a cópia de distribuição `artigo-laboratorio-404.pdf`.
+
 ## Compilação
 
 ```bash

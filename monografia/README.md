@@ -33,7 +33,8 @@ monografia/
 ├── pptr.json                 # configuração do puppeteer (Chrome do sistema) p/ mmdc
 ├── references.bib            # referências (verificadas, ver README)
 ├── build.sh                  # compilação
-└── main.pdf                  # PDF gerado
+├── main.pdf                  # PDF gerado pela compilação
+└── monografia-laboratorio-404.pdf  # cópia de distribuição (gerada pelo build.sh)
 ```
 
 ## Diagramas (Mermaid -> PNG)
