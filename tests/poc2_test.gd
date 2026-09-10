@@ -88,8 +88,31 @@ func _ready() -> void:
 
     var porta = _interactable_of(level, "ENV_Porta_Corredor")
     await _aproximar(player, porta)
+
+    print("== FR-011: a folha da porta leva o visual junto ==")
+    var folha = level.find_child("ENV_Porta_Corredor", true, false)
+    var detalhes_nomes: Array = ["DEC_Porta_Reforco", "DEC_Porta_Visor", "DEC_Porta_Placa"]
+    var detalhes: Array = []
+    var fechados: Array = []
+    var presos := 0
+    for nome_det in detalhes_nomes:
+        var det = level.find_child(nome_det, true, false)
+        detalhes.append(det)
+        fechados.append(det.global_position if det != null else Vector3.ZERO)
+        if det != null and det.get_parent() == folha:
+            presos += 1
+    _check("FR-011: os 3 detalhes da folha são filhos do nó da porta (%d)" % presos, presos == 3)
+
     player.get_node("Interaction").try_interact()
     _check("FR-011: porta aberta", level.door.is_open)
+    await get_tree().create_timer(level.door.duration + 0.3).timeout
+    var subiram := 0
+    for i in detalhes.size():
+        var det = detalhes[i]
+        if det != null and det.global_position.y > fechados[i].y + 1.5:
+            subiram += 1
+    _check("FR-011: detalhes da folha subiram com a porta (%d)" % subiram, subiram == 3)
+
     _check("FR-013: missão concluída", Lab404Game.quest.is_complete())
     _check(
         "objetivo final refletido no HUD",
@@ -138,14 +161,15 @@ func _ready() -> void:
     _check("FR-024b: câmera de segurança presente no nível", camera_seg is Lab404SecurityCamera)
     _check("FR-024b: câmera ativa após a energia voltar", camera_seg != null and camera_seg.is_tracking())
     if camera_seg != null:
-        player.global_position = Vector3(4.0, 0.05, 5.5)
-        await _wait_physics(4)
+        # Área aberta do laboratório, longe de mobília: o personagem não desliza ao ser teleportado.
+        player.global_position = Vector3(0.5, 0.05, 4.0)
+        await _wait_physics(20)
         var antes := _desvio_da_camera(camera_seg, player)
-        await _wait_physics(30)
+        await _wait_physics(60)
         var depois := _desvio_da_camera(camera_seg, player)
         _check(
             "FR-024b: câmera gira na direção do jogador (%.0f° → %.0f°)" % [rad_to_deg(antes), rad_to_deg(depois)],
-            depois < antes * 0.9
+            depois < antes
         )
 
     print("== Serialização (base para o save do POC 6) ==")

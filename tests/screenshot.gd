@@ -11,6 +11,7 @@ extends Node
 ##   LAB404_SHOT_VIEW  vazio (jogo) | input_test | terminal
 ##   LAB404_SHOT_POSE  "x,y,z,yaw_graus" → posiciona o jogador antes da captura
 ##   LAB404_SHOT_DUMP  "1" → imprime posições de Accents/Labels/CAM_Security
+##   LAB404_SHOT_FINISH "1" → conclui a missão, restabelece a energia e abre a porta
 ##
 ## Salva o primeiro frame estável de `scenes/main.tscn`, mede FPS por 3 s e encerra.
 
@@ -38,6 +39,17 @@ func _ready() -> void:
             print("LAB404-POSE: %s" % pose)
         else:
             push_warning("LAB404_SHOT_POSE inválida (use x,y,z,yaw) — ignorada")
+
+    if OS.get_environment("LAB404_SHOT_FINISH") == "1":
+        for passo in Lab404QuestManager.STEPS:
+            Lab404Game.quest.complete(String(passo["id"]))
+        Lab404Game.state.set_flag("pump_ok", true)
+        var nivel = main.get_node_or_null("Level")
+        if nivel != null and nivel.get("door") != null:
+            nivel.door.open()
+            print("LAB404-FINISH: missão concluída, porta aberta")
+        else:
+            push_warning("LAB404_SHOT_FINISH: porta não encontrada no nível")
 
     if OS.get_environment("LAB404_SHOT_DUMP") == "1":
         var jogador_atual = main.get_node_or_null("Player")
