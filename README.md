@@ -405,6 +405,7 @@ a arquitetura técnica em `docs/ARQUITETURA.md`.
 
 ```text
 lab404/
+├── artigo/            # artigo científico/tecnológico em LaTeX (build.sh + main.pdf)
 ├── assets/            # GLB exportado do Blender (assets/ASSET_LIST.md)
 ├── config/            # Input Map documentado + personalidade da ARIA
 ├── design/            # conceito visual e level design

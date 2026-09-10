@@ -1,0 +1,78 @@
+\section{Discussão}
+\label{sec:discussao}
+
+\subsection{Interpretação dos resultados}
+
+Os resultados respondem afirmativamente às três perguntas de pesquisa, dentro
+do escopo de um protótipo. Sobre a arquitetura (RQ1): a combinação de processo
+separado, contrato estruturado e sanitização em duas camadas mostrou-se
+suficiente para que a IA participasse do mundo --- dando dicas, diagnosticando
+equipamentos, comentando o estado do laboratório e mudando de tom --- sem
+receber qualquer capacidade de alterar o estado do jogo. O pior caso
+observado, em todas as falhas induzidas nos testes, foi uma resposta de
+\emph{fallback}: nunca um travamento, nunca uma ação não prevista.
+
+Sobre a viabilidade (RQ2): a jogabilidade manteve-se em 60~FPS limitados por
+\emph{vsync} na GPU integrada, com a cena detalhada (342 objetos, 37
+materiais), e a conversa local apresentou latência de 12,9~s a 22,0~s com um
+modelo de 8 bilhões de parâmetros. Essa ordem de grandeza é adequada a uma
+interação conversacional por turnos --- o terminal de ARIA --- e inadequada a
+reações em tempo real, o que reforça a decisão de projeto de não colocar a IA
+no laço de controle. Sobre o processo (RQ3): a especificação com critérios
+verificáveis e a suíte automatizada permitiram que cada etapa fosse aceita ou
+rejeitada com base em evidência, e não em impressão; as seis etapas fecharam
+com a suíte verde.
+
+\subsection{Comparação com a literatura}
+
+O contraste com os trabalhos de referência é deliberado. \emph{Generative
+Agents} e \emph{Voyager} investigam o que acontece quando se concede ao modelo
+autonomia de decisão e de execução \citep{park2023generative,wang2023voyager};
+o Laboratório 404 investiga o oposto --- quanto valor narrativo e pedagógico se
+obtém mantendo a IA estritamente consultiva. Essa escolha dialoga com o
+levantamento de Gallotta \emph{et al.}, que destaca custo, latência e
+confiabilidade como limites práticos das LLMs em jogos
+\citep{gallotta2024largelanguage}: aqui esses limites não foram eliminados,
+foram convertidos em restrições de projeto (intenções finitas, \emph{fallback}
+obrigatório, inferência local). Não há, neste trabalho, comparação quantitativa
+com os sistemas citados, pois os alvos são diferentes (agência aberta versus
+assistência limitada) [ESTUDO COMPARATIVO NÃO REALIZADO].
+
+\subsection{Limitações e ameaças à validade}
+
+\begin{itemize}
+  \item \textbf{Estudo de caso único, sem usuários:} o trabalho é uma
+  descrição de projeto e uma validação técnica; não mede aprendizagem nem
+  experiência do jogador. O playthrough humano de ponta a ponta (CA-013)
+  permanece pendente [ESTUDO DE USUÁRIO NÃO REALIZADO].
+  \item \textbf{Amostra pequena de latência:} as três medições da
+  \autoref{tab:latencia} são informativas, não experimentais; não há repetição
+  controlada, variação de carga ou comparação entre modelos. O modelo-alvo
+  \texttt{llama3.2:3b} não foi executado.
+  \item \textbf{Ambiente:} os números de desempenho valem para a máquina da
+  \autoref{tab:ambiente}; a validação em joystick PS1 físico e o uso de mouse
+  capturado seguem manuais. Durante o desenvolvimento, dois atritos de ambiente
+  exigiram documentação dedicada: o confinamento do pacote do motor bloqueava o
+  acesso a dispositivos de entrada até a conexão explícita da permissão de
+  joystick, e o servidor de áudio mantinha um estado de mudo por aplicativo que
+  silenciava apenas o jogo. Ambos os casos foram diagnosticados e estão
+  registrados como solução de problemas no material do projeto
+  \citep{lab404repo} --- são exemplos de ameaças à reprodutibilidade que
+  costumam passar em branco em relatos de jogos.
+  \item \textbf{Empacotamento:} a geração de um executável independente
+  (FR-033) estava bloqueada pela ausência dos modelos de exportação do motor no
+  ambiente; o critério permanece aberto.
+\end{itemize}
+
+\subsection{Implicações}
+
+Para quem projeta jogos educacionais, o caso sugere que a IA generativa pode
+entrar em cena como personagem consultivo --- e não como agente --- com
+latência de segundos e execução local, sem abrir mão de previsibilidade. Para
+quem pesquisa agentes em jogos, o desenho oferece um ponto de comparação: os
+mesmos modelos que rendem mais quando recebem autonomia também rendem valor
+narrativo quando recebem limites explícitos. Por fim, para a prática de
+desenvolvimento, o experimento sugere que um projeto de autor único assistido
+por agentes de IA pode manter rastreabilidade quando a especificação e os
+testes precedem a implementação --- e quando cada promessa do resumo é
+verificável por um comando.

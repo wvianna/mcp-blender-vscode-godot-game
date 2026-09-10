@@ -1,0 +1,26 @@
+\section{Conclusão}
+\label{sec:conclusao}
+
+Este artigo descreveu o projeto, a implementação e a validação do Laboratório
+404, um jogo 3D educacional/ficcional no qual uma IA local participa do mundo
+sem controlá-lo. O objetivo foi atingido no nível de protótipo: as seis provas
+de conceito foram concluídas e demonstráveis, a suíte automatizada cobre 210 a
+211 verificações do motor e 16 testes do adapter, todas aprovadas, e o jogo
+roda a 60~FPS (limitados por \emph{vsync}) em GPU integrada, mantendo conversa
+local com latência entre 12,9~s e 22,0~s.
+
+As contribuições práticas são o padrão de \emph{IA diegética com capacidade
+limitada} --- processo separado, contrato estruturado e sanitização em duas
+camadas ---, o processo incremental orientado a especificação com evidências
+automatizadas e visuais, e os artefatos públicos que permitem reproduzir e
+auditar cada afirmação quantitativa deste texto \citep{lab404repo,lab404video}.
+
+As limitações são conhecidas e declaradas: ausência de estudo com usuários,
+medições de latência em pequena amostra, validação manual de hardware
+pendente, empacotamento independente ainda não gerado e modelo-alvo menor não
+executado. Como trabalhos futuros, pretende-se: (i) executar e comparar o
+\texttt{llama3.2:3b} com o modelo usado aqui; (ii) concluir o empacotamento e a
+demonstração sem intervenção do desenvolvedor (FR-033); (iii) realizar o
+playthrough humano de ponta a ponta e, depois, um estudo controlado com
+usuários em contexto educacional; e (iv) ampliar o conteúdo do vertical slice
+mantendo a mesma disciplina de evidências.

@@ -1,0 +1,91 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------------------------------------------------------------------------
+% Laboratório 404 — artigo científico/tecnológico
+% Autor: William da Silva Vianna (Instituto Federal Fluminense)
+% Compilação: pdflatex -> bibtex -> pdflatex -> pdflatex  (ver build.sh)
+% ---------------------------------------------------------------------------
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\shorthandoff{"}
+
+% Área de texto ampliada (a classe article em A4 tem \textwidth de apenas
+% 360pt, insuficiente para as tabelas e diagramas do artigo).
+\usepackage[margin=2.5cm]{geometry}
+
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[round]{natbib}
+\usepackage[hidelinks]{hyperref}
+
+\title{Laborat\'orio 404: um jogo 3D educacional com uma IA local\\
+restrita ao mundo --- arquitetura, processo incremental e valida\c{c}\~ao automatizada}
+
+\author{William da Silva Vianna\\Instituto Federal Fluminense}
+
+\date{Setembro de 2026}
+
+% [A CONFIRMAR] e-mail de contato, campus/cidade e ORCID do autor.
+
+\emergencystretch=2em
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+Jogos educacionais podem se beneficiar de grandes modelos de linguagem (LLMs)
+capazes de dialogar com o jogador, mas integrar esses modelos a um jogo real
+imp\~oe desafios de seguran\c{c}a (a IA n\~ao deve controlar o jogo), de
+desempenho (infer\^encia local em hardware modesto) e de engenharia (manter o
+processo rastre\'avel em um desenvolvimento de autor \'unico assistido por
+agentes de IA). Este artigo relata o projeto, a implementa\c{c}\~ao e a
+valida\c{c}\~ao do \textbf{Laborat\'orio 404}, um jogo 3D
+educacional/ficcional no qual a IA \textbf{ARIA} administra uma instala\c{c}\~ao
+subterr\^anea e conversa com o jogador sem nunca controlar o estado do mundo.
+O prot\'otipo foi constru\'ido em seis provas de conceito incrementais
+(POC~1 a POC~6) sobre Godot~4.5, Blender~5.2.1, um adaptador Python (FastAPI)
+e o Ollama com modelo local; as respostas da IA s\~ao restritas a cinco
+inten\c{c}\~oes validadas em duas camadas, com \textit{fallback} textual. A
+valida\c{c}\~ao combinou especifica\c{c}\~ao rastre\'avel, su\'ite automatizada
+\textit{headless} e evid\^encias visuais. Resultados: 211 verifica\c{c}\~oes
+Godot e 16 testes Python aprovados; cena 3D com 342 n\'os e 37 materiais
+(1.018,7~KB em GLB) executando a 60~FPS (limitado por \textit{vsync}) em GPU
+integrada AMD Radeon Graphics a 1280$\times$720; respostas de ARIA com o modelo
+local \texttt{llama3.1:8b} entre 12,9~s e 22~s em tr\^es medi\c{c}\~oes. As
+limita\c{c}\~oes incluem aus\^encia de estudo com usu\'arios, valida\c{c}\~ao
+manual de hardware pendente e n\~ao execu\c{c}\~ao do modelo-alvo
+\texttt{llama3.2:3b}. Os artefatos (c\'odigo, especifica\c{c}\~ao, capturas e
+v\'ideo de demonstra\c{c}\~ao) s\~ao p\'ublicos.
+\end{abstract}
+
+\noindent\textbf{Palavras-chave:} jogos s\'erios; jogos educacionais; grandes
+modelos de linguagem; infer\^encia local; Godot; desenvolvimento orientado a
+especifica\c{c}\~ao.
+
+\input{sections/introduction}
+\input{sections/literature}
+\input{sections/methodology}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusion}
+
+\section*{Agradecimentos}
+O autor agradece a si mesmo --- pela teimosia de levar este projeto at\'e o fim.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

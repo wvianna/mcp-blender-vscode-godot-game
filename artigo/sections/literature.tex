@@ -1,0 +1,77 @@
+\section{Fundamentação teórica e trabalhos relacionados}
+\label{sec:fundamentacao}
+
+\subsection{Jogos sérios e educacionais}
+
+O termo \emph{jogos sérios} popularizou-se a partir da definição de Abt:
+jogos com um propósito educacional explícito, que não são feitos apenas para
+divertir --- embora possam ser divertidos \citep{abt1970serious}. A pesquisa em
+aprendizagem com jogos mostrou que bons jogos já incorporam, de forma orgânica,
+princípios que a escola persegue: identidade, experimentação, risco controlado,
+regras claras e retroalimentação constante \citep{gee2003what}. A visão de
+simulação virtual como base para jogos, e dos jogos como ferramenta de
+treinamento, foi consolidada na transição de simulação para realidade
+virtual \citep{zyda2005from}. Revisões mais recentes organizam o campo por
+aplicação (saúde, defesa, educação, planejamento) e apontam que a avaliação de
+impacto segue sendo um desafio metodológico
+\citep{laamarti2014overview}. [REFERÊNCIA NECESSÁRIA: diretrizes
+contemporâneas de avaliação de jogos sérios em contextos escolares.]
+
+\subsection{Grandes modelos de linguagem em jogos}
+
+O levantamento de Gallotta \emph{et al.} mapeia os papéis que LLMs podem
+assumir em jogos --- geração de conteúdo, personagens, apoio ao projeto,
+testes --- e discute limites práticos, como custo, latência e confiabilidade
+\citep{gallotta2024largelanguage}. Duas limitações recorrentes interessam
+diretamente a este trabalho: (a) modelos grandes exigem infraestrutura
+relevante ou serviços externos; e (b) quanto maior a autonomia concedida ao
+modelo, maior a superfície de risco sobre o estado do jogo.
+
+\subsection{Agentes generativos e autonomia}
+
+\emph{Generative Agents} propôs agentes que armazenam experiências em linguagem
+natural, sintetizam reflexões e planejam comportamento, produzindo
+comportamento social emergente e verossímil em um ambiente interativo
+\citep{park2023generative}. \emph{Voyager} levou a autonomia adiante em
+Minecraft: um currículo automático, uma biblioteca de habilidades em código e
+um mecanismo iterativo de prompting com retroalimentação do ambiente; o agente
+aprende continuamente sem ajuste de parâmetros, consultando um modelo externo
+\citep{wang2023voyager}. Esses trabalhos demonstram o potencial da autonomia,
+mas também a distância entre esse desenho e um jogo educacional em que cada
+ação precisa ser previsível, auditável e barata de executar. Neste artigo, a
+escolha é deliberadamente oposta: a IA conversa, comenta e sugere; quem age é
+sempre o motor do jogo.
+
+\subsection{Inferência local}
+
+Executar o modelo na própria máquina elimina dependência de serviços externos,
+dispensa chaves de API e mantém o conteúdo no computador do usuário; o Ollama
+é uma ferramenta consolidada para esse cenário \citep{ollama2026}. O custo é a
+latência: modelos menores rodam em hardware modesto, mas geram respostas em
+escala de segundos, o que restringe seu uso a interações conversacionais (por
+turnos) em vez de reações em tempo real. [REFERÊNCIA NECESSÁRIA: estudo
+comparativo de latência de LLMs locais em hardware sem GPU dedicada.]
+
+\subsection{Processo de desenvolvimento}
+
+Práticas como desenvolvimento orientado a testes e a especificações propõem
+que critérios verificáveis sejam escritos antes da implementação.
+[REFERÊNCIA NECESSÁRIA: fontes canônicas sobre desenvolvimento orientado a
+especificação.] No contexto deste projeto, essas práticas foram adaptadas a um
+fluxo de trabalho assistido por agentes de IA: a especificação, os requisitos e
+os critérios de aceitação são os artefatos que restringem cada iteração de
+implementação, e a suíte automatizada é o juiz comum entre autor humano e
+agente. O uso de servidores MCP (\emph{Model Context Protocol}) para dar ao
+agente acesso controlado a ferramentas --- no caso, a cena do Blender --- é
+parte desse fluxo \citep{lab404repo}.
+
+\subsection{Síntese e lacuna}
+
+A literatura concentra-se, de um lado, em agentes autônomos e capazes de agir
+\citep{park2023generative,wang2023voyager} e, de outro, em visões amplas sobre
+o papel das LLMs em jogos \citep{gallotta2024largelanguage}. O que este
+trabalho investiga é a combinação menos explorada: \emph{uma IA diegética, com
+capacidade formalmente limitada, executada localmente e integrada a um jogo
+educacional completo, com processo de desenvolvimento documentado e
+evidências de validação}. É nessa lacuna que se posicionam as contribuições
+descritas na \autoref{sec:metodologia}.

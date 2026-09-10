@@ -1,0 +1,226 @@
+\section{Materiais e métodos}
+\label{sec:metodologia}
+
+\subsection{Estratégia de desenvolvimento}
+
+O projeto seguiu um processo orientado a especificação, adaptado ao contexto de
+autor único assistido por agentes de IA. Antes do código, foram fixados: uma
+constituição com princípios não negociáveis; um roadmap de seis provas de
+conceito; uma especificação com requisitos funcionais (FR) e não funcionais
+(NFR), critérios de aceitação no formato DADO\slash QUANDO\slash ENTÃO e uma matriz de
+rastreabilidade requisito--teste; e regras permanentes de interação para
+agentes de IA \citep{lab404repo}.
+
+Duas regras estruturaram o trabalho. A primeira é a \emph{Regra de Ouro}: cada
+POC termina em uma versão executável e demonstrável, com caminho de teste
+reproduzível --- o protótipo nunca fica quebrado entre etapas. A segunda é a
+proibição de índices de botão no gameplay (FR-001/NFR-005): o jogo consome
+apenas ações semânticas de um \emph{Input Map} (\texttt{move\_forward},
+\texttt{interact}, \texttt{pause} e outras), o que manteve o mesmo código
+funcional para teclado e para o adaptador USB de PlayStation 1, cuja
+enumeração de eixos e botões varia conforme o hardware.
+
+Os agentes de IA trabalharam dentro dessas restrições: a especificação e os
+critérios de aceitação funcionavam como contrato de cada iteração e a suíte
+automatizada, como juiz comum. Um servidor MCP (\emph{Model Context Protocol})
+no editor dava ao agente acesso controlado à cena do Blender para modelagem
+assistida \citep{lab404repo}.
+
+\subsection{Ambiente e ferramentas}
+
+A \autoref{tab:ambiente} resume o ambiente de desenvolvimento e execução,
+verificado por comando na máquina de referência. As versões reportadas são
+exatamente as que produziram os resultados da \autoref{sec:resultados}; o
+projeto mantém um passo de importação de recursos (GLB e áudio) executado por
+linha de comando, necessário na primeira execução de cada clone.
+
+\begin{table}[H]
+\centering
+\caption{Ambiente de desenvolvimento e execução (verificado em 2026-09-10).}
+\label{tab:ambiente}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{38mm}>{\raggedright\arraybackslash}p{104mm}@{}}
+\toprule
+Item & Versão / configuração \\
+\midrule
+Sistema operacional & Ubuntu 24.04.4 LTS \\
+CPU / GPU & AMD Ryzen 7 5700U com Radeon Graphics (GPU integrada) \\
+Memória & 30 GiB \\
+Motor de jogo & Godot 4.5 (\texttt{4.5.stable.official.876b29033}), renderer \texttt{gl\_compatibility} \\
+Modelagem 3D & Blender 5.2.1 LTS \\
+Linguagem do adapter & Python 3.12.3 \\
+Bibliotecas do adapter & FastAPI 0.141.1; Uvicorn 0.52.4; Pydantic 2.13.5; requests 2.34.2 \\
+Inferência local & Ollama; modelo-alvo \texttt{llama3.2:3b}; validação com \texttt{llama3.1:8b} \\
+Formato de assets & glTF 2.0 binário (GLB) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O motor de jogo~\citep{godot2026} concentra gameplay, física, interface, áudio e
+persistência; o Blender~\citep{blender2026} produz os assets exportados em
+GLB~\citep{khronos2026gltf}; o adaptador usa
+FastAPI~\citep{fastapi2026}, Pydantic~\citep{pydantic2026} e
+Uvicorn~\citep{uvicorn2026}; e a inferência local é feita pelo
+Ollama~\citep{ollama2026}. Os efeitos sonoros são gerados por um script do
+próprio projeto, sem conteúdo de terceiros.
+
+\subsection{Arquitetura do sistema}
+
+A \autoref{fig:arquitetura} apresenta a arquitetura. O jogo é um processo
+Godot que consome assets exportados do Blender e consome \emph{input} de
+teclado e joystick por ações semânticas. A conversa com a IA nunca é feita
+diretamente pelo motor: passa por um processo separado (o adaptador), acessível
+por HTTP em \texttt{localhost}, que valida a entrada, monta o prompt com a
+personalidade versionada e o estado do jogo, chama o Ollama e valida a saída.
+Separar a IA do jogo em processos distintos tem duas consequências práticas:
+o jogo continua jogável com a IA desligada (respostas de \emph{fallback}) e a
+falha de qualquer elo não derruba a aplicação.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rounded corners=2pt, align=center, inner sep=5pt,
+              minimum height=10mm, fill=black!4},
+  arr/.style={-{Stealth[length=2.2mm]}, semithick},
+  lbl/.style={font=\scriptsize, inner sep=1.5pt}
+]
+\node[box] (blender) {Blender 5.2.1};
+\node[box, right=12mm of blender] (glb) {GLB/glTF};
+\node[box, right=12mm of glb, minimum width=40mm] (godot) {\textbf{Godot 4.5}\\ \scriptsize gameplay, física, UI, áudio, save};
+\node[box, above=11mm of godot, minimum width=40mm] (inputs) {\scriptsize Teclado e joystick USB PS1};
+\node[box, below=15mm of godot, minimum width=40mm] (adapter) {\textbf{Adaptador FastAPI}\\ \scriptsize validação, intenções, fallback};
+\node[box, right=16mm of adapter, minimum width=24mm] (ollama) {\textbf{Ollama}\\ \scriptsize LLM local};
+
+\draw[arr] (blender) -- (glb);
+\draw[arr] (glb) -- (godot);
+\draw[arr] (inputs) -- node[lbl, right]{\scriptsize Input Map} (godot);
+\draw[arr] ([xshift=-2.5mm]godot.south) -- node[lbl, left]{\scriptsize pergunta + estado} ([xshift=-2.5mm]adapter.north);
+\draw[arr] ([xshift=2.5mm]adapter.north) -- ([xshift=2.5mm]godot.south);
+\draw[arr] (adapter) -- node[lbl, above]{\scriptsize prompt} (ollama);
+\draw[arr] ([yshift=-2.5mm]ollama.west) -- ([yshift=-2.5mm]adapter.east);
+\node[lbl, below=1mm of adapter, text width=42mm, align=center]
+  {\scriptsize resposta: texto + intenção restrita};
+\end{tikzpicture}
+\caption{Arquitetura do Laboratório 404. A IA vive fora do processo do jogo: o adaptador é a fronteira onde entrada e saída são validadas.}
+\label{fig:arquitetura}
+\end{figure}
+
+\subsection{Pipeline de assets (Blender para GLB)}
+
+A cena 3D foi modelada no Blender sob convenções fixas: 1 unidade do Blender
+equivale a 1 metro (NFR-002); objetos usam prefixos por função
+(\texttt{ENV\_} para ambiente, \texttt{PROP\_} para equipamentos,
+\texttt{DEC\_} para decoração, \texttt{NPC\_} para personagens); e a colisão é
+embutida no próprio asset por meio do sufixo \texttt{-col}, que o importador
+do Godot converte em corpo estático, mantendo a malha visível original para
+renderização. As transformações são aplicadas antes da exportação, e o GLB
+resultante é importado pela linha de comando do motor, sem edição manual de
+cena. O detalhamento progressivo da sala --- luminárias, letreiros,
+sinalização, mobiliário e um NPC completo --- foi conduzido nessas convenções e
+medido ao final (\autoref{sec:resultados}).
+
+\subsection{ARIA: IA local com intenções restritas}
+
+O núcleo do desenho de segurança está na \autoref{fig:conversa}. A IA devolve
+sempre um objeto estruturado com texto, intenção e confiança; a intenção é
+sanitizada no adaptador e novamente no cliente do jogo. O conjunto permitido é
+deliberadamente pequeno:
+
+\begin{verbatim}
+ALLOWED_INTENTS = {"HINT", "DIAGNOSE", "LORE",
+                   "STATUS", "NONE"}
+\end{verbatim}
+
+Qualquer valor fora desse conjunto --- inclusive ruído devolvido pelo modelo
+--- é convertido para \texttt{NONE} (FR-017, CA-010). A resposta também é
+limitada em forma e conteúdo: mensagem de entrada entre 1 e 2000 caracteres
+(erro 422 quando inválida), \emph{timeout} de 30~s na chamada ao Ollama e
+resposta de \emph{fallback} textual em caso de exceção (FR-018, NFR-004). O
+cliente no jogo espera um pouco mais que o adaptador e, se nada chegar,
+também usa texto pré-definido --- ou seja, a IA pode estar lenta ou ausente sem
+comprometer a jogabilidade (CA-009). A personalidade de ARIA (identidade,
+regras, tons de voz e texto de \emph{fallback}) fica em um arquivo JSON
+versionado, não espalhada em código (FR-020), e o estado do jogo é injetado no
+prompt como contexto factual. Em nenhum ponto a IA recebe permissão de escrever
+estado, abrir portas ou alterar física (FR-021, NFR-006).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  node distance=6mm,
+  etapa/.style={draw, rounded corners=2pt, align=center, inner sep=4pt,
+               fill=black!4, text width=92mm},
+  guarda/.style={etapa, fill=black!12, draw=black, thick},
+  arr/.style={-{Stealth[length=2mm]}, semithick}
+]
+\node[etapa] (a) {Terminal de ARIA: o jogador digita a mensagem};
+\node[etapa, below=of a] (b) {Cliente HTTP no jogo (GDScript): espera limitada e resposta de fallback pré-definida};
+\node[etapa, below=of b] (c) {Adaptador FastAPI: valida a entrada (Pydantic, 1 a 2000 caracteres), monta o prompt com personalidade versionada e estado do jogo};
+\node[etapa, below=of c] (d) {Ollama (local): gera JSON com texto, intenção e confiança (timeout de 30 s)};
+\node[guarda, below=of d] (e) {Sanitização em duas camadas: intenção fora do conjunto permitido vira NONE; o jogo nunca executa comandos da IA};
+\draw[arr] (a) -- (b);
+\draw[arr] (b) -- (c);
+\draw[arr] (c) -- (d);
+\draw[arr] (d) -- (e);
+\end{tikzpicture}
+\caption{Cadeia de uma mensagem até a resposta. Cada elo falha de forma segura: o pior caso é um texto de fallback, nunca um travamento ou uma ação não prevista.}
+\label{fig:conversa}
+\end{figure}
+
+\subsection{Conteúdo e jogabilidade}
+
+O arco do vertical slice começa com a chegada do técnico à instalação e um
+tutorial de controles dentro do jogo; segue pela missão
+\texttt{RESTAURAR\_COMUNICACAO} (\autoref{fig:missao}); passa por um corredor
+que dá acesso a uma ala procedural gerada a partir de uma semente
+determinística (mesma semente, mesmo laboratório; conectividade garantida por
+construção) e culmina no núcleo de ARIA, com um epílogo de três escolhas. Ao
+longo do percurso, o mundo reage ao jogador: luzes mudam conforme o estado da
+energia, uma câmera de segurança passa a acompanhar o jogador depois que a
+energia volta, um NPC comenta o estado dos equipamentos e a ARIA muda de tom
+quando um alerta é ignorado. O progresso é serializável em arquivo local
+(save/load) e a ambiência sonora é contínua, com efeitos para interações,
+porta, alarme e erro.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  node distance=4mm,
+  s/.style={draw, rounded corners=2pt, align=center, inner sep=3pt,
+            fill=black!4, text width=20mm},
+  arr/.style={-{Stealth[length=1.8mm]}, semithick}
+]
+\node[s] (a) {buscar fusível F-17};
+\node[s, right=of a] (b) {buscar módulo RS-404};
+\node[s, right=of b] (c) {instalar no painel};
+\node[s, right=of c] (d) {reiniciar CLP};
+\node[s, right=of d] (e) {diagnosticar bomba};
+\node[s, right=of e] (f) {abrir a porta B1};
+\foreach \x/\y in {a/b, b/c, c/d, d/e, e/f} {
+  \draw[arr] (\x) -- (\y);
+}
+\end{tikzpicture}
+\caption{A missão principal em seis passos dependentes e ordenados. Cada passo só é aceito quando o anterior está concluído.}
+\label{fig:missao}
+\end{figure}
+
+\subsection{Validação automatizada e evidências}
+
+A validação combina três instrumentos. O primeiro é a suíte de testes
+\emph{headless}: cada POC tem uma cena de teste que instancia o jogo, executa
+interações reais (mover, coletar, instalar, conversar, salvar) e verifica o
+estado resultante, sem depender de janela ou de intervenção manual. O segundo
+é um conjunto de testes de API em Python que exercita o adaptador com
+requisições válidas e inválidas, inclusive limites e \emph{fallback}. O
+terceiro é um arnês de captura de tela: uma cena que posiciona o jogador em
+poses pré-determinadas, opcionalmente conclui a missão e salva imagens
+automáticas em 1280$\times$720 --- usado para produzir as evidências visuais
+deste artigo.
+
+Itens que exigem presença física ou julgamento humano são explicitamente
+separados: operação de mouse com captura de cursor, calibração do adaptador
+PS1 em hardware real e o playthrough humano de ponta a ponta (CA-013). Esses
+itens estão declarados como pendentes nos artefatos do projeto, e não são
+tratados como concluídos por inferência.

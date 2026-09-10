@@ -1,0 +1,68 @@
+\section{Introdução}
+\label{sec:introducao}
+
+Jogos sérios são jogos cujo propósito principal não é o puro entretenimento
+\citep{abt1970serious} e que, nas últimas duas décadas, consolidaram-se como
+instrumentos de educação, treinamento e simulação \citep{zyda2005from,
+laamarti2014overview}. A literatura sobre aprendizagem sustenta que bons jogos
+incorporam princípios pedagógicos --- identidade, experimentação ativa,
+problemas bem ordenados e retroalimentação imediata --- que podem ser
+aproveitados também na educação formal \citep{gee2003what}. Construir um jogo
+com esse propósito, porém, exige mais do que uma boa ideia: exige arquitetura,
+processo e evidências de que o artefato realmente funciona.
+
+Nos últimos anos, grandes modelos de linguagem (LLMs) passaram a ocupar papel
+de destaque em jogos, seja gerando conteúdo, seja animando personagens ou
+apoiando o próprio desenvolvimento \citep{gallotta2024largelanguage}. Os
+resultados são promissores, mas trazem dois problemas práticos. O primeiro é de
+\emph{controle}: agentes que decidem e executam ações podem alterar o estado do
+jogo de formas imprevisíveis --- em \emph{Generative Agents}, os personagens
+planejam, refletem e agem com grande autonomia \citep{park2023generative} e, em
+\emph{Voyager}, o agente escreve e executa código para progredir
+\citep{wang2023voyager}; ambos dependem de modelos de grande porte remotos ou
+de infraestrutura substancial. O segundo é de \emph{reprodutibilidade}: é raro
+que um projeto de jogo com IA descreva, com o mesmo cuidado, o processo de
+desenvolvimento, os critérios de aceitação e as evidências de teste.
+
+Este artigo enfrenta esses dois problemas em um caso real: o \textbf{Laboratório
+404}, um jogo 3D educacional/ficcional no qual uma IA local, \textbf{ARIA},
+administra uma instalação subterrânea e conversa com o jogador --- mas nunca
+controla o jogo. O protótipo foi desenvolvido em seis provas de conceito
+incrementais (POC~1 a POC~6) sobre Godot~4.5 (gameplay), Blender~5.2.1 (assets
+3D), um adaptador Python/FastAPI e o Ollama com modelo local. A IA recebe
+contexto do jogo e devolve apenas texto e uma intenção restrita a cinco valores
+validados em duas camadas independentes; qualquer desvio vira \texttt{NONE} e
+o jogo usa uma resposta de \emph{fallback}. O desenvolvimento foi documentado
+como especificação executável (requisitos funcionais e não funcionais, critérios
+de aceitação no formato DADO/QUANDO/ENTÃO e matriz de rastreabilidade) e
+validado por uma suíte automatizada \emph{headless}.
+
+O trabalho parte de três perguntas de pesquisa:
+
+\begin{itemize}
+  \item \textbf{RQ1 (arquitetura):} como integrar uma LLM local a um jogo 3D de
+  modo que ela enriqueça o mundo e a narrativa sem, em nenhum momento,
+  controlar o estado do jogo?
+  \item \textbf{RQ2 (viabilidade):} é possível manter jogabilidade a 60~FPS e
+  conversa local com latência tolerável em um computador sem GPU dedicada?
+  \item \textbf{RQ3 (processo):} como conduzir e documentar esse
+  desenvolvimento --- de autor único, assistido por agentes de IA --- de forma
+  rastreável e reprodutível?
+\end{itemize}
+
+As contribuições são: (i) um padrão de arquitetura de \emph{IA diegética com
+capacidade limitada}, com dupla validação de intenções e \emph{fallback}
+(\autoref{sec:metodologia}); (ii) um processo incremental orientado a
+especificação, com evidências automatizadas e visuais; (iii) uma implementação
+completa e aberta --- código, especificação, capturas e vídeo de demonstração
+--- disponível publicamente \citep{lab404repo,lab404video}; e (iv) resultados
+empíricos de execução em GPU integrada, incluindo as latências medidas da
+conversa com o modelo local.
+
+O restante do artigo está organizado assim: a
+\autoref{sec:fundamentacao} revisa os trabalhos relacionados; a
+\autoref{sec:metodologia} descreve o processo, a arquitetura, o pipeline de
+assets, a integração da IA e a estratégia de validação; a
+\autoref{sec:resultados} apresenta os resultados; a \autoref{sec:discussao}
+discute interpretação, comparação, limitações e implicações; e a
+\autoref{sec:conclusao} conclui.
