@@ -4,7 +4,7 @@ Projeto experimental de um jogo 3D educacional/ficcional que combina **Blender +
 
 > Objetivo do projeto: começar com um protótipo pequeno (POC 1) e chegar a um jogo em que uma **IA local participa organicamente do mundo** — dando dicas, comentando o estado do laboratório e reagindo ao jogador — sem nunca controlar o jogo.
 
-**Atalhos:** [Objetivo do jogo](#objetivo-do-jogo) · [Missão em 6 passos](#missão-em-6-passos) · [Tecnologias](#tecnologias-usadas) · [Roadmap](#roadmap-poc-1--poc-6) · [Como executar](#como-executar) · [Testes](#testes) · [Arquitetura](#arquitetura) · [Estrutura do projeto](#estrutura-do-projeto) · [Galeria visual](#galeria-visual)
+**Atalhos:** [Objetivo do jogo](#objetivo-do-jogo) · [Missão em 6 passos](#missão-em-6-passos) · [Tecnologias](#tecnologias-usadas) · [Roadmap](#roadmap-poc-1--poc-6) · [Como executar](#como-executar) · [Testes](#testes) · [Arquitetura](#arquitetura) · [Estrutura do projeto](#estrutura-do-projeto) · [Vídeo de demonstração](#vídeo-de-demonstração) · [Galeria visual](#galeria-visual)
 
 ## Objetivo do jogo
 
@@ -408,7 +408,7 @@ lab404/
 ├── assets/            # GLB exportado do Blender (assets/ASSET_LIST.md)
 ├── config/            # Input Map documentado + personalidade da ARIA
 ├── design/            # conceito visual e level design
-├── docs/              # instalação, narrativa, testes, roteiro de demo, imagens
+├── docs/              # instalação, narrativa, testes, roteiro de demo, imagens e vídeos
 ├── scenes/            # cenas .tscn (main, player, level_poc2, HUD, terminal, epílogo)
 ├── scripts/           # GDScript do jogo + adapter Python de ARIA
 ├── tests/             # suíte automatizada (Godot headless + Python)
@@ -427,6 +427,17 @@ lab404/
 | mundo reativo (luzes, NPC, memória, tom) | `scripts/world_events.gd`, `scripts/npc.gd`, `scripts/memory_store.gd` |
 | HUD, menus e terminal | `scenes/hud.tscn`, `scripts/hud.gd`, `scripts/aria_terminal.gd` |
 | testes e evidências | `tests/` + `docs/TESTES.md` |
+
+## Vídeo de demonstração
+
+Sessão de jogo no POC 2 (1 min 08 s, 1280×768 @30 fps, H.264): o jogador cumpre a missão passo a
+passo — instala o **fusível F-17** e o **módulo RS-404** no painel, reinicia o **CLP**, diagnostica a
+**bomba hidráulica** e abre a **porta B1** — até o HUD anunciar *"comunicação restaurada"*.
+
+<video src="docs/videos/poc-laboratorio-404_1.mp4" width="720" controls poster="docs/images/poc2-sala-geral.png"></video>
+
+> Sem player no seu visualizador? Abra o arquivo direto:
+> [`docs/videos/poc-laboratorio-404_1.mp4`](docs/videos/poc-laboratorio-404_1.mp4) (9,3 MB).
 
 ## Galeria visual
 
