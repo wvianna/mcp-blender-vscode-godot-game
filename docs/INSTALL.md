@@ -62,6 +62,36 @@ Não assuma que:
 
 Anote os índices reais exibidos e ajuste o Input Map (ver `config/input_map.md`) se necessário.
 
+Com o Godot instalado por **snap**, a interface `joystick` precisa ser conectada uma vez
+(exige sudo) — sem isso o confinamento bloqueia `/dev/input/*` e o jogo não vê o adaptador:
+
+```bash
+sudo snap connect godot4:joystick
+snap connections godot4 | grep joystick   # deve aparecer  godot4:joystick  :joystick
+```
+
+## Solução de problemas
+
+### O jogo abre mudo (mas o sistema tem som)
+
+O PulseAudio/PipeWire guarda volume e mute **por aplicativo**, então o jogo pode voltar mudo
+mesmo com o sistema tocando normalmente:
+
+```bash
+paplay audio/ui.wav                                        # beep de teste do sistema
+LC_ALL=C pactl list sink-inputs | awk '/Laborat/{print}'   # bloco do stream do jogo
+pactl set-sink-input-mute <índice> 0                       # desmuta (fica salvo para as próximas execuções)
+```
+
+### O jogo não detecta o joystick
+
+1. O sistema vê o dispositivo? `ls /dev/input/js*` e
+   `udevadm info -q property -n /dev/input/eventX | grep ID_INPUT_JOYSTICK` (deve ser `=1`).
+2. Godot por snap: conecte a interface — `sudo snap connect godot4:joystick`.
+3. Valide na tela de calibração: `godot4 --path . res://scenes/input_test.tscn`
+   (ou `Esc` → **Diagnóstico de input**); o adaptador deve aparecer como `#0 …`.
+4. O log do jogo (`.run/game.log`) registra os joysticks detectados e eventos de hotplug.
+
 ## Desempenho
 
 O alvo inicial é PC sem GPU dedicada. Portanto:

@@ -54,6 +54,8 @@ func _ready() -> void:
 
     Lab404Sfx.set_ambience(true)  # FR-031
     tutorial.start()              # FR-029
+    _report_joypads()
+    Input.joy_connection_changed.connect(_on_joy_connection_changed)
 
 func _unhandled_input(event: InputEvent) -> void:
     # Overlays consomem o input enquanto abertos.
@@ -187,3 +189,23 @@ func load_game() -> Error:
     level.apply_state()
     hud.show_feedback("JOGO CARREGADO.")
     return err
+
+# --- Diagnóstico de input ------------------------------------------------------
+
+## Registra os joysticks no log (`.run/game.log`): o confinamento do snap pode esconder o
+## adaptador sem nenhum erro visível (correção: `sudo snap connect godot4:joystick`).
+func _report_joypads() -> void:
+    var pads := Input.get_connected_joypads()
+    if pads.is_empty():
+        var hint := ""
+        if OS.has_environment("SNAP"):
+            hint = " — snap: rode `sudo snap connect godot4:joystick` (ver docs/INSTALL.md)"
+        print("Lab404: nenhum joystick detectado%s." % hint)
+        return
+    var names: PackedStringArray = []
+    for id in pads:
+        names.append("#%d %s" % [id, Input.get_joy_name(id)])
+    print("Lab404: joysticks detectados: %s." % ", ".join(names))
+
+func _on_joy_connection_changed(device: int, connected: bool) -> void:
+    print("Lab404: joystick %d %s." % [device, "conectado" if connected else "desconectado"])

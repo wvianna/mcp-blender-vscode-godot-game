@@ -44,7 +44,13 @@ func _ready() -> void:
 
     print("== FR-031: áudio ==")
     _check("efeitos carregados (porta, coleta)", Lab404Sfx.has_sound("door") and Lab404Sfx.has_sound("pickup"))
-    _check("ambiência disponível (hum)", Lab404Sfx.has_sound("hum"))
+    # Regressão: os WAVs importam comprimidos (QOA), então o loop da ambiência precisa usar
+    # a duração real do arquivo — `data.size() / 2` dava ~0,8 s de um hum de 4 s.
+    var hum := load("res://audio/hum.wav") as AudioStreamWAV
+    _check(
+        "ambiência em loop cobre o arquivo (hum)",
+        Lab404Sfx.has_sound("hum") and hum != null and Lab404Sfx.loop_end_frames(hum) > hum.mix_rate
+    )
 
     print("== FR-030: save/load ==")
     var err := Lab404Save.save_game(SAVE_PATH)

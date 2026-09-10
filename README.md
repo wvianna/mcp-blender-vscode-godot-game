@@ -161,6 +161,9 @@ Passo a passo:
    Controles: WASD/setas + analógico esquerdo (mover), mouse/analógico direito (câmera),
    `E`/X (interagir), `Shift`/R1 (correr), `Enter`/X (avançar tutorial e diálogo),
    `Esc`/Start (pausa → Diagnóstico de input), `F5` salvar, `F9` carregar.
+
+   > Godot por **snap**: rode uma vez `sudo snap connect godot4:joystick` para o jogo enxergar
+   > o adaptador PS1→USB — o confinamento bloqueia `/dev/input/*` (ver `docs/INSTALL.md`).
 3. ARIA (POC 3) — adapter + modelo local:
 
    ```bash

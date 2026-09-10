@@ -115,8 +115,8 @@ Cobre: módulos/POIs/iluminação, determinismo por seed, conectividade BFS em 6
 
 ## POC 6 — automatizado (`tests/poc6_test.gd`)
 
-Cobre: tutorial, missão completa por interação real, áudio disponível, save/load, geração da ala
-procedural no corredor, núcleo de ARIA, escolhas do epílogo.
+Cobre: tutorial, missão completa por interação real, áudio (efeitos + ambiência em loop
+completo), save/load, geração da ala procedural no corredor, núcleo de ARIA, escolhas do epílogo.
 
 - [ ] início ao fim por uma pessoa (10–20 min) — CA-013
 - [ ] joystick e teclado no hardware

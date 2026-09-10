@@ -42,6 +42,14 @@ func play(sound: String, volume_db := 0.0) -> bool:
             return true
     return false
 
+## Frames de loop de um stream importado — a ambiência usa o arquivo inteiro.
+## Os WAVs importam comprimidos em QOA: `data` guarda o bitstream, não amostras PCM,
+## então o fim do loop vem da duração real (regressão em `tests/poc6_test.gd`).
+static func loop_end_frames(stream: AudioStreamWAV) -> int:
+    if stream == null:
+        return 0
+    return int(round(stream.get_length() * float(stream.mix_rate)))
+
 ## Liga/desliga a ambiência em loop (usada a partir do POC 6).
 func set_ambience(enabled: bool, volume_db := -12.0) -> void:
     if not enabled:
@@ -55,7 +63,8 @@ func set_ambience(enabled: bool, volume_db := -12.0) -> void:
     _hum_player = AudioStreamPlayer.new()
     var stream: AudioStreamWAV = _streams["hum"]
     stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
-    stream.loop_end = stream.data.size() / 2  # 16-bit mono
+    stream.loop_begin = 0
+    stream.loop_end = loop_end_frames(stream)
     _hum_player.stream = stream
     _hum_player.volume_db = volume_db
     add_child(_hum_player)
