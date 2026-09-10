@@ -1,0 +1,763 @@
+\chapter{Desenvolvimento}
+\label{cap:desenvolvimento}
+
+Este capítulo descreve como o Laboratório 404 foi construído: a arquitetura
+geral, a especificação que organizou o trabalho e o desenvolvimento de cada
+prova de conceito, com as decisões de engenharia relevantes e os defeitos
+encontrados e corrigidos. O capítulo segue a ordem cronológica do projeto,
+que é também a ordem de dependência entre os subsistemas.
+
+\section{Visão geral da arquitetura}
+\label{sec:arquitetura}
+
+O sistema é composto por quatro blocos: o \textbf{jogo} (motor Godot, com
+\emph{gameplay}, física, interface, áudio e persistência); os \textbf{assets
+3D} (modelados no Blender e exportados em GLB); o \textbf{adaptador de IA}
+(serviço local em Python que valida e media a conversa); e a \textbf{IA}
+propriamente dita (modelo de linguagem executado localmente pelo Ollama). A
+Figura~\ref{fig:arquitetura} apresenta o conjunto.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{01_arquitetura.png}
+\caption{Arquitetura do Laboratório 404: o jogo consome assets do Blender e ações de entrada; a IA vive em processos separados, atrás de um adaptador que valida entrada e saída.}
+\label{fig:arquitetura}
+\end{figure}
+
+Duas decisões estruturais merecem destaque. A primeira é manter a IA
+\emph{fora} do processo do jogo: se o adaptador ou o modelo falham, o jogo
+continua jogável e responde com textos de \emph{fallback}. A segunda é tratar
+o adaptador como fronteira de segurança: é nele que a entrada é validada, que
+o contexto do jogo é injetado no \emph{prompt} e que a saída do modelo é
+reduzida a texto e a uma intenção pertencente a um conjunto finito.
+
+\section{Especificação e organização incremental}
+\label{sec:especificacao}
+
+Antes da implementação, o projeto foi especificado com requisitos funcionais
+(FR) e não funcionais (NFR), critérios de aceitação no formato
+DADO/QUANDO/ENTÃO e uma matriz de rastreabilidade que associa cada requisito
+ao teste correspondente. Os requisitos foram agrupados por prova de conceito,
+e cada grupo tinha um critério de avanço explícito: a etapa só era considerada
+concluída com a suíte verde e as evidências registradas. O
+\autoref{ap:requisitos} reproduz a especificação consolidada; o
+\autoref{ap:testes} detalha a suíte.
+
+\section{\poc{1} --- Fundação jogável}
+\label{sec:poc1}
+
+O primeiro incremento estabeleceu o esqueleto do jogo: um jogador que se
+movimenta, uma câmera, um HUD mínimo, menu de pausa e --- decisão que se
+provou estruturante --- um mapa de entrada inteiramente baseado em ações
+semânticas.
+
+\subsection{Entrada semântica e diagnóstico de controles}
+
+O jogo consome ações nomeadas (por exemplo, \texttt{move\_forward},
+\texttt{look\_right}, \texttt{interact}, \texttt{pause}) e nunca índices
+numéricos de botão ou eixo. A razão é prática: adaptadores USB convertem
+controles de maneiras distintas, e um índice fixo deixa de funcionar quando o
+adaptador muda. Com ações semânticas, o mapeamento físico fica isolado na
+configuração do motor. O Quadro~\ref{quad:input} ilustra o padrão usado em
+todo o \emph{gameplay}.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Padrão de leitura de entrada usado no gameplay (GDScript).}
+\label{quad:input}
+\begin{verbatim}
+var direcao := Input.get_vector(
+    "move_left", "move_right",
+    "move_forward", "move_backward")
+# NUNCA usar indices crus, como Input.is_joy_button_pressed(0, 1)
+\end{verbatim}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir do código do projeto.}
+\end{quadro}
+
+Para calibrar adaptadores desconhecidos, o projeto inclui uma tela de
+diagnóstico de entrada que lista os dispositivos conectados, os eixos e os
+botões em tempo real, com zona morta configurável (padrão de 0,15) e
+tratamento de conexão e desconexão a quente (\emph{hotplug}) sem interromper a
+execução. Essa tela é a única parte do projeto autorizada a ler índices
+numéricos; o \emph{gameplay}, jamais.
+
+\subsection{Jogador, câmera, HUD e pausa}
+
+O jogador é um corpo com física que respeita gravidade e colisão. A câmera é
+controlada por mouse e, quando o adaptador expõe os eixos do analógico
+direito, por este. O HUD exibe o objetivo corrente e o convite de interação
+contextual; o menu de pausa (\texttt{Esc}/\emph{Start}) dá acesso ao
+diagnóstico de entrada, ao salvamento e à saída. Essas funcionalidades
+correspondem aos requisitos FR-002 a FR-006 e foram verificadas
+automaticamente (critérios CA-001 a CA-005), com duas ressalvas manuais: o
+uso do mouse com captura de cursor e a operação física do joystick.
+
+\section{\poc{2} --- Laboratório funcional}
+\label{sec:poc2}
+
+O segundo incremento transformou o esqueleto em um laboratório: uma sala
+modelada no Blender, interação por proximidade, inventário, missão e estados
+de equipamento.
+
+\subsection{Pipeline de assets: do Blender ao jogo}
+\label{sec:pipeline_assets}
+
+Os assets 3D seguem convenções fixas que tornaram a integração previsível:
+1 unidade do Blender equivale a 1 metro; as transformações são aplicadas antes
+da exportação; os objetos são nomeados por função (Quadro~\ref{quad:prefixos});
+e a colisão é embutida no próprio asset por meio do sufixo \texttt{-col} ---
+o importador do motor converte essas malhas em corpos estáticos, mantendo a
+malha visível original apenas para renderização.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Prefixos de nomenclatura adotados na modelagem.}
+\label{quad:prefixos}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.0cm} >{\raggedright\arraybackslash}p{11.0cm}@{}}
+\toprule
+Prefixo & Uso \\
+\midrule
+\texttt{ENV\_} & arquitetura (paredes, piso, teto, estruturas) \\
+\texttt{PROP\_} & equipamento ou objeto cenográfico \\
+\texttt{INT\_} & objeto interativo \\
+\texttt{COL\_} & colisor auxiliar \\
+\texttt{FX\_} & efeito visual \\
+\texttt{NPC\_} & personagem \\
+\texttt{DEC\_} & decoração \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir das convenções do projeto.}
+\end{quadro}
+
+A exportação é feita por script, com parâmetros fixos: formato binário GLB,
+transformações aplicadas, eixo vertical convertido, e \emph{exclusão} de
+câmeras e luzes do arquivo (a iluminação é reconstruída no motor, o que
+permite ajustá-la sem reexportar). O Quadro~\ref{quad:export} reproduz a
+chamada de exportação de referência. Depois de cada exportação, o projeto
+executa a importação de recursos por linha de comando e a suíte de testes,
+garantindo que o asset novo não quebrou nenhuma verificação.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Exportação de referência do asset 3D (script do Blender).}
+\label{quad:export}
+\begin{verbatim}
+bpy.ops.export_scene.gltf(
+    filepath="assets/lab404/lab_sala_poc2.glb",
+    export_format='GLB', export_apply=True, export_yup=True,
+    export_cameras=False, export_lights=False)
+\end{verbatim}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir do pipeline do projeto.}
+\end{quadro}
+
+O asset final da sala contém 342 nós, 37 materiais e 35 nós de colisão,
+totalizando 1.018,7~KB --- números obtidos por inspeção programática do
+arquivo, não por estimativa. O emissivo dos materiais usa a extensão
+\texttt{KHR\_materials\_emissive\_strength} do glTF, o que permitiu acender
+telas e sinalizações com intensidade controlada, sem estourar para branco no
+renderizador compatível.
+
+\subsection{A sala e o detalhamento visual}
+\label{sec:sala}
+
+A sala do laboratório foi modelada a partir de uma referência visual de
+ambiente industrial e refinada iterativamente. A
+Figura~\ref{fig:referencia} mostra a referência de arte usada e a
+Figura~\ref{fig:sala_geral} mostra o resultado em jogo, no estado inicial ---
+energia isolada, iluminação de emergência e a missão pendente no HUD.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{referencia_arte.png}
+\caption{Referência visual utilizada para a reconstrução da sala (imagem de referência adotada no projeto).}
+\label{fig:referencia}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{sala_geral.png}
+\caption{Sala do Laboratório 404 no estado inicial: energia isolada, iluminação de emergência, técnico (NPC) à esquerda e bomba em falha. Captura do jogo em 1280$\times$720.}
+\label{fig:sala_geral}
+\end{figure}
+
+O detalhamento seguiu um princípio econômico: cada elemento adicional precisava
+ter função visual ou narrativa. O CLP ganhou ranhuras de ventilação e quatro
+LEDs de status que piscam em períodos distintos; o painel de encaixe recebeu
+faixas zebradas de perigo, triângulo de alerta elétrico, esquema de fiação e
+molduras dos slots; a bomba recebeu braçadeiras, apoios ancorados ao piso,
+longarinas com parafusos sextavados, manômetro analógico com ponteiro e
+válvulas de alívio; e a bancada de trabalho recebeu luminária própria. As
+Figuras~\ref{fig:clp} a \ref{fig:bancada} ilustram esse conjunto.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{clp.png}
+\caption{Estação do CLP, com ranhuras de ventilação, LEDs de status e diagrama \emph{ladder} na tela.}
+\label{fig:clp}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{painel.png}
+\caption{Painel de encaixe, com sinalização de perigo, esquema de fiação e slots para o fusível e o módulo.}
+\label{fig:painel}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{bomba.png}
+\caption{Conjunto da bomba hidráulica, com manômetro, tubulações e ancoragens mecânicas, em estado de falha.}
+\label{fig:bomba}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{bancada.png}
+\caption{Bancada de trabalho com luminária dedicada, onde está o item coletável inicial.}
+\label{fig:bancada}
+\end{figure}
+
+Duas decisões técnicas do detalhamento merecem registro porque contrariam
+expectativas comuns de quem vem da modelagem tradicional: LEDs que piscam
+\emph{não} podem ser animados no glTF (o formato anima apenas translação,
+rotação e escala, não emissão de material --- de modo que o piscar é feito por
+script no motor, alternando a visibilidade dos nós dos LEDs); e textos de
+tela são implementados como nós de texto do próprio motor, sobre a tela
+emissiva do modelo, evitando dependência de fontes dentro do GLB e
+permitindo ajustes de idioma sem reexportar o asset.
+
+\subsection{Interação, inventário e missão}
+\label{sec:interacao}
+
+A interação é um sistema desacoplado: um raio de proximidade detecta objetos
+interativos, exibe o convite contextual no HUD e, quando a ação de interagir é
+acionada, emite um sinal que o objeto trata. O inventário é diegético (um kit
+técnico), em vez de uma grade abstrata: o jogador coleta o fusível F-17, o
+módulo RS-404 e uma chave de manutenção, e os instala nos pontos
+correspondentes da sala.
+
+A missão principal, \texttt{RESTAURAR\_COMUNICACAO}, encadeia seis passos
+dependentes (Figura~\ref{fig:missao}): localizar o fusível, localizar o
+módulo, instalar ambos no painel, reiniciar o CLP, diagnosticar a bomba e
+abrir a porta do corredor. Cada passo só é aceito quando o anterior está
+concluído, e o HUD reflete o avanço. O encadeamento é o que dá ao jogo sua
+estrutura didática: o jogador percorre uma sequência de diagnóstico
+semelhante à de um atendimento real.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{04_missao.png}
+\caption{Missão principal em seis passos dependentes e ordenados.}
+\label{fig:missao}
+\end{figure}
+
+\subsection{Estados de equipamento}
+\label{sec:estados}
+
+Os equipamentos possuem uma máquina de estados explícita --- desligado,
+falha, pronto e em operação --- serializável e independente da interface
+(Figura~\ref{fig:estados}). A escolha por um estado explícito, em vez de
+sinalizações dispersas, permitiu dois efeitos diretos: o mundo (luzes, NPC,
+tom da IA) reage ao estado sem conhecer detalhes de implementação, e o
+progresso do jogador pode ser salvo e restaurado com fidelidade.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{03_estados_equipamento.png}
+\caption{Máquina de estados dos equipamentos, serializável e independente da interface.}
+\label{fig:estados}
+\end{figure}
+
+\subsection{Porta B1: um defeito visual e sua correção}
+\label{sec:porta}
+
+A porta do corredor --- obstáculo final da missão --- apresentou um defeito
+instrutivo. No asset original, a folha da porta era composta por várias malhas
+soltas; apenas a malha de colisão estava vinculada ao mecanismo de abertura.
+O resultado visível era um paradoxo: a porta abria logicamente (o jogador
+passava), mas o visual da folha permanecia fechado no vão. A correção foi
+feita em duas frentes: no Blender, as malhas decorativas (reforço, visor e
+placa) foram tornadas filhas do objeto da porta, e no jogo o mecanismo passou
+a elevar a folha inteira em 2,15~m e a ocultá-la ao final do curso. As
+Figuras~\ref{fig:porta_fechada} e \ref{fig:porta_aberta} mostram o antes e o
+depois; os testes ganharam verificações específicas (a folha deve conter os
+três detalhes como filhos e subir mais de 1,5~m).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{porta_fechada.png}
+\caption{Porta B1 fechada, antes de a missão ser concluída.}
+\label{fig:porta_fechada}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{porta_aberta.png}
+\caption{Porta B1 aberta após a missão: a folha sobe e libera o vão do corredor.}
+\label{fig:porta_aberta}
+\end{figure}
+
+Dois detalhes adicionais merecem registro no detalhamento dos equipamentos: o
+esquema de fiação serigrafado do painel foi reposicionado na margem direita
+(na posição original, ficava escondido atrás da tela) e o pato de borracha da
+bancada --- um elemento decorativo --- precisou ser elevado acima da
+superfície de colisão da bancada, que é mais alta que a superfície visível.
+As Figuras~\ref{fig:det_painel} a \ref{fig:det_bomba} ilustram o nível de
+detalhe alcançado.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{detalhe_painel.png}
+\caption{Detalhe do painel: faixas de perigo, triângulo de alerta, esquema de fiação e molduras dos slots.}
+\label{fig:det_painel}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{detalhe_telas.png}
+\caption{Detalhe das telas: conteúdos em português exibidos sobre as superfícies emissivas.}
+\label{fig:det_telas}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{detalhe_bomba.png}
+\caption{Detalhe da bomba: braçadeiras, apoios, parafusos sextavados e manômetro.}
+\label{fig:det_bomba}
+\end{figure}
+
+\section{\poc{3} --- \aria{}: IA local com intenções restritas}
+\label{sec:poc3}
+
+O terceiro incremento adicionou a personagem de IA. É o subsistema em que as
+decisões de segurança mais importam, e por isso ele é descrito com detalhe.
+
+\subsection{Fluxo de uma mensagem}
+\label{sec:fluxo_mensagem}
+
+A Figura~\ref{fig:fluxo} mostra o caminho de uma mensagem. O jogador digita
+no terminal do jogo; o cliente (em GDScript) envia um JSON para o adaptador
+local; o adaptador valida a entrada, monta o \emph{prompt} com a
+personalidade versionada e o estado do jogo, chama o modelo e valida a
+resposta antes de devolvê-la. Cada elo da cadeia pode falhar de forma segura:
+o pior caso é um texto de \emph{fallback}, nunca um travamento ou uma ação não
+prevista.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{02_fluxo_conversa.png}
+\caption{Cadeia completa de uma mensagem até a resposta: validação em duas camadas e resposta de fallback em caso de falha.}
+\label{fig:fluxo}
+\end{figure}
+
+\subsection{Contrato de dados}
+\label{sec:contrato}
+
+O adaptador expõe um único ponto de conversa e um ponto de verificação de
+saúde. A entrada exige mensagem não vazia de até 2000 caracteres e um
+dicionário opcional com o estado do jogo; a saída é sempre um objeto com
+texto, intenção, alvo opcional, confiança e erro opcional. O
+Quadro~\ref{quad:contrato} reproduz o contrato essencial.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Contrato de dados do adaptador de IA (resumo).}
+\label{quad:contrato}
+\begin{verbatim}
+POST /chat
+  request:  {"message": "A bomba nao liga.",
+             "game_state": {"bomba": "FAULT", "energia": 62}}
+  response: {"text": "...", "intent": "DIAGNOSE",
+             "target": "PROP_Bomba", "confidence": 0.94}
+validacao: 422 para entrada invalida;
+           falha/timeout do modelo => texto de fallback, intent NONE
+\end{verbatim}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir do adaptador do projeto.}
+\end{quadro}
+
+A validação de entrada usa modelos de dados declarativos (Pydantic), o que
+garante que nenhuma mensagem fora dos limites chega ao modelo. A validação de
+saída é a parte mais importante do desenho: o texto gerado é aceito, mas a
+intenção só sobrevive se pertencer ao conjunto permitido --- caso contrário,
+é convertida para \texttt{NONE}. A mesma sanitização é repetida no cliente do
+jogo, de modo que as duas pontas precisam concordar. O
+Quadro~\ref{quad:intents} reproduz o conjunto e a regra.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Conjunto de intenções permitidas e regra de sanitização (adaptador).}
+\label{quad:intents}
+\begin{verbatim}
+ALLOWED_INTENTS = {"HINT", "DIAGNOSE", "LORE", "STATUS", "NONE"}
+
+def sanitize_intent(valor):
+    # remove ruido, normaliza e converte para maiusculas
+    candidato = re.sub(r"[^A-Za-z]", "", str(valor or "")).upper()
+    return candidato if candidato in ALLOWED_INTENTS else "NONE"
+\end{verbatim}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir do código do adaptador.}
+\end{quadro}
+
+\subsection{Personalidade versionada}
+\label{sec:personalidade}
+
+A personalidade da IA não está espalhada pelo código: ela vive em um arquivo
+de configuração versionado, com identidade, regras de conduta, tons de voz
+(neutra, impaciente, preocupada), saudação e texto de \emph{fallback}. Duas
+regras desse arquivo materializam o desenho de segurança adotado: a IA
+\emph{não executa comandos, não controla portas, energia nem física}; e nunca
+inventa componentes, códigos ou procedimentos inexistentes no laboratório.
+O tom pode ser alterado pelo estado do jogo --- por exemplo, quando o jogador
+ignora um alerta, a IA responde de forma mais curta e seca ---, o que dá
+coerência afetiva à ficção sem ampliar seu poder de ação.
+
+\subsection{Limites de tempo e resposta de segurança}
+\label{sec:fallback}
+
+O adaptador aguarda o modelo por até 30 segundos; o cliente no jogo espera um
+pouco mais (35 segundos) para acomodar a variabilidade de um modelo local.
+Esgotado o prazo --- ou ocorrendo qualquer erro de rede, de validação ou de
+modelo ---, a resposta devolvida é o texto de \emph{fallback} com intenção
+\texttt{NONE}. Essa é a garantia que sustenta o requisito CA-009: o jogo
+nunca trava por causa da IA.
+
+\subsection{No jogo: terminal e estação}
+\label{sec:terminal}
+
+No jogo, a conversa acontece em um terminal com histórico de mensagens e
+entrada de texto, acessível ao interagir com a estação da IA
+(Figura~\ref{fig:aria_estacao}). A estação também exibe uma leitura de status
+própria, com identificação da versão do núcleo e do canal de comunicação.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{aria_estacao.png}
+\caption{Estação física da \aria{} na sala, com tela de status e ponto de interação.}
+\label{fig:aria_estacao}
+\end{figure}
+
+\section{\poc{4} --- Mundo reativo}
+\label{sec:poc4}
+
+O quarto incremento fez o laboratório reagir ao estado do jogo, com quatro
+mecanismos.
+
+\subsection{NPC e diálogo contextual}
+
+Um técnico (NPC) comenta o estado do laboratório --- por exemplo, a situação
+da bomba --- de acordo com o momento da missão. O personagem foi modelado como
+um corpo único de 882 vértices e 10 materiais (macacão, colete refletivo,
+luvas, botas, capacete com lanterna e rosto), com a mesma malha servindo de
+colisão; a Figura~\ref{fig:tecnico} mostra o resultado em jogo. A fala do NPC
+usa o mesmo canal de mensagens do HUD que os avisos do sistema.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{tecnico.png}
+\caption{Técnico (NPC) na sala, com uniforme, capacete e postura de trabalho.}
+\label{fig:tecnico}
+\end{figure}
+
+\subsection{Memória em camadas}
+\label{sec:memoria}
+
+A memória do jogo foi separada em quatro camadas com ciclos de vida
+diferentes (Figura~\ref{fig:memoria}): a sessão atual; o estado persistente
+(salvo em arquivo); o conhecimento narrativo acumulado (fatos que o jogador
+aprendeu sobre a instalação e a IA); e o histórico conversacional. A separação
+evita o problema clássico de misturar \emph{flags} de curto prazo com fatos
+que precisam sobreviver ao salvamento --- e permite que a IA receba como
+contexto exatamente a camada adequada à pergunta.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{07_memoria.png}
+\caption{As quatro camadas de memória e estado, com ciclos de vida diferentes.}
+\label{fig:memoria}
+\end{figure}
+
+\subsection{Eventos e iluminação em camadas}
+
+Os eventos do mundo reagem ao estado: luzes mudam conforme a energia, portas
+respeitam permissões e o tom da IA muda quando um alerta é ignorado. A
+iluminação foi organizada em duas camadas: a luz geral, com dois estados
+(claro e emergência), alinhada às luminárias efetivamente visíveis no modelo
+3D; e luzes de acento por zona (emergência, IA, painel, bomba, sala de
+controle), que preservam a identidade cromática de cada área mesmo no escuro.
+Pouco depois de a energia ser restabelecida, uma câmera de segurança da sala
+passa a acompanhar o jogador com um movimento limitado --- uma recompensa
+visual pelo avanço na missão.
+
+\section{\poc{5} --- Laboratório procedural}
+\label{sec:poc5}
+
+O quinto incremento estendeu o jogo para além da sala modelada à mão. Um
+gerador cria uma ala de laboratório a partir de módulos tipados (corredor,
+controle, bombas, baterias, sensores, arquivo e contenção), cada um com
+entradas, saídas, pontos de interesse e iluminação. A geração é determinística
+por semente --- a mesma semente produz sempre o mesmo laboratório ---, e a
+conectividade é garantida por construção e verificada por busca em largura:
+nenhuma sala fica inalcançável (Figura~\ref{fig:gerador}). Essa combinação de
+determinismo e garantia de conectividade é o que torna a geração testável
+automaticamente, e não apenas plausível.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{06_gerador.png}
+\caption{Geração procedural: semente, módulos, verificação de conectividade por busca em largura e layout final.}
+\label{fig:gerador}
+\end{figure}
+
+\section{\poc{6} --- Recorte vertical}
+\label{sec:poc6}
+
+O sexto incremento fechou o arco jogável: tutorial, persistência, áudio e
+epílogo.
+
+\subsection{Tutorial e progressão}
+
+O jogo começa com um tutorial de controles apresentado em etapas curtas, que
+apresenta ao jogador a movimentação, a câmera e a interação antes que a
+missão exija qualquer procedimento. A estrutura dramática em quatro atos
+(Figura~\ref{fig:narrativa}) conduz a ficção: a falha inicial, a percepção de
+que há algo inconsistente, a revelação sobre a IA e a escolha final.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{09_narrativa.png}
+\caption{Estrutura dramática em quatro atos, do restabelecimento da energia à escolha final.}
+\label{fig:narrativa}
+\end{figure}
+
+\subsection{Persistência}
+
+O progresso é salvo em arquivo local e restaurado com fidelidade: o
+salvamento inclui o ponto da missão, as \emph{flags} de estado, os estados
+dos equipamentos e o conhecimento narrativo acumulado. Após o carregamento, o
+mundo é reconciliado --- luzes, portas e equipamentos refletem o estado
+restaurado ---, o que é verificado automaticamente.
+
+\subsection{Áudio}
+
+Os efeitos sonoros são originais, gerados por um script do próprio projeto:
+coleta, instalação, porta, erro, alarme, interface e ambiência. A ambiência é
+um laço contínuo de baixa intensidade, e os efeitos pontuais usam um conjunto
+de canais reutilizáveis. Um defeito encontrado e corrigido nesse subsistema
+merece registro: como os arquivos de áudio são importados pelo motor em
+formato comprimido, o cálculo do ponto de repetição do laço precisava usar a
+duração real do arquivo, e não o tamanho do bloco de dados comprimido --- erro
+que causava um laço de menos de um segundo em um trecho de quatro segundos. A
+correção foi acompanhada de uma verificação de regressão na suíte.
+
+\subsection{Epílogo}
+
+Ao final, o jogador escolhe entre seguir as instruções da IA, questioná-la ou
+reiniciar seu núcleo. A escolha é registrada no estado persistente e altera o
+texto final exibido. A decisão de projeto --- declarada no escopo do trabalho
+--- foi manter a ramificação restrita ao epílogo, em vez de multiplicar
+caminhos.
+
+\section{Engenharia de desempenho}
+\label{sec:desempenho_dev}
+
+O alvo de execução em computador sem GPU dedicada guiou decisões em todas as
+etapas. No motor, adotou-se o renderizador compatível
+(\texttt{gl\_compatibility}), geometria simples, número controlado de luzes e
+ausência de efeitos de pós-processamento custosos. No asset, o emissivo foi
+dosado (luzes de ambiente em intensidade 1,5--1,6; telas em 1,1--1,3) para
+não estourar em branco na ausência de \emph{bloom}. No detalhamento, os
+efeitos de animação que o formato glTF não suporta (emissão intermitente)
+foram convertidos em lógica de script de baixo custo. E a iluminação do nível
+segue as posições das luminárias efetivamente modeladas --- a luz nasce onde
+o jogador vê a fonte ---, o que evita tanto o gasto desnecessário quanto o
+resultado visual incoerente.
+
+O orçamento de tempo por quadro a 60 Hz é de
+\begin{equation}
+\label{eq:orcamento}
+t_{\text{quadro}} = \frac{1}{f} = \frac{1}{60} \approx 16{,}67\ \text{ms},
+\end{equation}
+\noindent e foi esse orçamento --- considerando lógica de \emph{gameplay},
+física simplificada, iluminação em camadas e interface --- que orientou duas
+decisões estruturais: manter efeitos de pós-processamento fora do projeto e
+converter animações de material em lógica de script barata. A iluminação em
+camadas é um compromisso explícito: em vez de muitas luzes dinâmicas com
+sombras (custo alto em GPU integrada), usa-se um conjunto reduzido de luzes
+sem sombras, compensado por emissivos dosados no asset e por cores de acento
+por zona.
+
+\section{Interface e direção visual}
+\label{sec:interface}
+
+A interface do jogo foi tratada como instrumento, não como menu genérico de
+videogame. O HUD mantém, no canto superior, o relógio da instalação, a
+identificação do setor e o estado de energia; abaixo, à esquerda, a lista de
+objetivos com marcação de passo concluído --- o mesmo encadeamento da missão
+descrita na \autoref{sec:interacao}; e, na base, os convites de interação e de
+status. O resultado é um painel que informa sem competir com o cenário.
+
+O terminal da IA recebeu tratamento visual próprio, com cabeçalho de
+identificação do núcleo, histórico de mensagens e linha de entrada. A escolha
+de exibir a conversa como terminal --- em vez de balões de diálogo --- reforça
+a ficção de sistema operacional e acomoda naturalmente a latência da IA:
+enquanto a resposta não chega, o cursor permanece ativo, sem quebrar a
+imersão.
+
+O inventário também é diegético: em vez de uma grade abstrata, o jogador vê
+o kit técnico com seus itens (fusível, módulo e chave), em uma lista curta que
+reforça a correspondência entre o que se carrega e o que se instala nos
+painéis. A paleta geral é escura, com cores de função --- branco para
+iluminação geral, ciano para interfaces da IA, âmbar para máquinas e vermelho
+para emergência e travamentos ---, mantendo coerência com a iluminação em
+camadas descrita na \autoref{sec:poc4}.
+
+\section{Level design do recorte vertical}
+\label{sec:level_design}
+
+O recorte vertical organiza o espaço em torno de um corredor central
+(Figura~\ref{fig:mapa}). A sala principal --- onde começa o jogo --- concentra
+a bancada, o painel, o CLP, a bomba e a estação da IA; as demais salas são
+alcançadas pelo corredor, que funciona como rota principal e como ponto de
+orientação. Os pontos de interesse (arquivo, energia, bombas e controle)
+ficam nas extremidades, e o percurso final conduz ao núcleo da IA.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\scriptsize,
+  sala/.style={draw, rounded corners=2pt, align=center, inner sep=3pt,
+               minimum width=2.5cm, minimum height=0.95cm, fill=black!4},
+  seta/.style={-{Stealth[length=1.8mm]}, semithick}]
+\node[sala] (cor) {Corredor\\(rota principal)};
+\node[sala, left=14mm of cor] (bom) {Bombas (PI)};
+\node[sala, right=14mm of cor] (ctl) {Controle --- IA (PI)};
+\node[sala, above=10mm of cor] (arq) {Arquivo (PI)};
+\node[sala, below=10mm of cor] (ene) {Energia (PI)};
+\draw[seta] (bom) -- (cor);
+\draw[seta] (cor) -- (ctl);
+\draw[seta] (cor) -- (arq);
+\draw[seta] (cor) -- (ene);
+\draw[seta] (ene) -- (ctl);
+\end{tikzpicture}
+\caption{Organização espacial do recorte vertical: corredor central, pontos de interesse (PI) nas extremidades e percurso final até o núcleo da IA.}
+\label{fig:mapa}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir do level design do projeto.}
+\end{figure}
+
+Três princípios guiaram o traçado: o jogador deve sempre saber onde está
+(landmarks visuais, letreiros e iluminação por zona); deve saber qual é o
+objetivo corrente (HUD persistente); e deve reconhecer a interação possível
+(convite contextual). O que o jogo deliberadamente \emph{não} entrega de
+imediato é a motivação da IA --- a ambiguidade é conteúdo narrativo, não
+falha de comunicação.
+
+\section{Persistência: estrutura do salvamento}
+\label{sec:persistencia}
+
+O salvamento é um arquivo de texto no diretório do usuário, com estrutura
+versionada em campos independentes (Quadro~\ref{quad:save}). A separação
+segue as camadas de memória descritas na \autoref{sec:memoria}: o que é
+estado persistente entra no arquivo; o que é sessão não entra. O carregamento
+reconcilia o mundo --- luzes, portas e equipamentos assumem o estado salvo
+---, e essa reconciliação é verificada automaticamente pelo teste da etapa
+correspondente.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Estrutura do arquivo de salvamento (campos principais).}
+\label{quad:save}
+\begin{verbatim}
+{
+  "versao": 1,
+  "missao": {"passo_atual": 5, "concluida": true},
+  "flags": {"energia_restaurada": true, ...},
+  "equipamentos": {"bomba": "RUNNING", "clp": "RUNNING", ...},
+  "memoria_narrativa": ["bomba", "revelacao", ...],
+  "epilogo": "questionar"
+}
+\end{verbatim}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir do sistema de salvamento do projeto.}
+\end{quadro}
+
+\section{Generação procedural: algoritmo}
+\label{sec:algoritmo_gerador}
+
+O gerador da ala procedural trabalha em duas fases (Quadro~\ref{quad:gerador}):
+primeiro constrói uma árvore de expansão a partir da semente, ligando módulos
+por portas compatíveis; em seguida, verifica por busca em largura que todos os
+módulos são alcançáveis a partir da entrada e que os pontos de interesse
+estão em regiões acessíveis. Se a verificação falha, o gerador descarta o
+layout e tenta de novo --- com a mesma semente, o resultado é sempre o mesmo,
+o que torna a geração testável e os defeitos reproduzíveis.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Pseudocódigo do gerador procedural (duas fases).}
+\label{quad:gerador}
+\begin{verbatim}
+gerar(seed):
+    rng = aleatorio(seed)
+    arvore = expandir_modulos(rng)      # portas compativeis
+    layout = posicionar(arvore)
+    enquanto nao conectado(layout):
+        layout = tentar_novamente(rng)  # rng preserva o determinismo
+    retornar layout
+\end{verbatim}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir do gerador do projeto.}
+\end{quadro}
+
+\section{Operação: execução, registros e encerramento}
+\label{sec:operacao}
+
+O projeto oferece dois scripts de operação: um para iniciar o jogo (e,
+quando disponível, o serviço de IA) e outro para encerrar ambos com segurança.
+Os registros de execução e os identificadores de processo ficam em um
+diretório de trabalho; ao encerrar, o script pede a saída por um arquivo-sinal
+que o próprio jogo observa, em vez de enviar sinais do sistema operacional.
+Essa decisão --- incomum, mas necessária --- responde a uma restrição do
+ambiente: o motor instalado por pacote confinado recusa sinais externos, de
+modo que tanto o encerramento assistido quanto a própria suíte de testes
+dependem do canal cooperativo. O detalhe é registrado aqui porque afeta
+diretamente a reprodutibilidade das execuções.
+
+\section{Subsistema de áudio}
+\label{sec:audio_dev}
+
+O áudio é inteiramente original e gerado por um script do projeto, sem
+conteúdo de terceiros: sete efeitos que cobrem coleta, instalação, porta,
+erro, alarme, interface e ambiência (Quadro~\ref{quad:audio}). A ambiência é
+um laço contínuo de baixa intensidade, e os efeitos pontuais compartilham um
+conjunto de canais reutilizáveis, evitando sobreposições quando o jogador
+interage rapidamente.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Catálogo de sons do jogo (gerados por script próprio).}
+\label{quad:audio}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{5.4cm} >{\raggedright\arraybackslash}p{5.2cm}@{}}
+\toprule
+Som & Uso & Característica \\
+\midrule
+\texttt{pickup} & coleta de item & curto, ascendente \\
+\texttt{install} & instalação no painel & curto, mecânico \\
+\texttt{door} & abertura da porta & ruído descendente \\
+\texttt{error} & ação inválida & tom descendente seco \\
+\texttt{alarm} & alerta do sistema & pulsado, mais longo \\
+\texttt{ui} & interface e terminal & clique discreto \\
+\texttt{hum} & ambiência contínua & laço de baixa frequência \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir do gerador de áudio do projeto.}
+\end{quadro}
+
+\section{Considerações do capítulo}
+\label{sec:consideracoes_desenvolvimento}
+
+O desenvolvimento seguiu uma trajetória de complexidade crescente: entrada e
+movimento; asset e interação; IA com fronteira de segurança; mundo reativo;
+geração procedural; e fechamento narrativo. Cada etapa preservou a
+possibilidade de executar e demonstrar o jogo completo, o que permitiu que as
+evidências fossem coletadas continuamente --- e não apenas ao final. Os
+resultados quantitativos dessa construção são apresentados no
+\autoref{cap:resultados}.

@@ -1,0 +1,66 @@
+\chapter{Suíte de testes e evidências}
+\label{ap:testes}
+
+Este apêndice descreve a suíte automatizada e os instrumentos de evidência
+utilizados no trabalho.
+
+\section*{Cenas de teste do motor (uma por etapa)}
+\label{ap:cenas}
+
+Cada cena de teste instancia o jogo, executa interações reais e verifica o
+estado resultante, sem interface gráfica e sem intervenção manual. A
+execução completa é feita por um único comando
+(\texttt{tests/run\_all.sh}), que percorre as cenas em ordem e, ao final,
+executa também os testes do adaptador de IA.
+
+\begin{itemize}
+  \item \textbf{\poc{1} (77 verificações)} --- entrada semântica, movimento,
+  colisão, gravidade, câmera, pausa, HUD, zona morta e tratamento de
+  \emph{hotplug};
+  \item \textbf{\poc{2} (34)} --- interação por proximidade, inventário,
+  coleta, instalação no painel, avanço da missão, estados de equipamento,
+  porta (incluindo a verificação de regressão da folha visual), iluminação em
+  camadas, letreiros e câmera de segurança;
+  \item \textbf{\poc{3} (25--26)} --- disponibilidade do serviço, limite de
+  tempo, modelo ausente, resposta inválida, JSON malformado, modelo lento e
+  servidor desligado, com verificação do \emph{fallback};
+  \item \textbf{\poc{4} (21)} --- fala do NPC por estado, luzes conforme
+  energia, tom da IA após alerta ignorado, quatro camadas de memória e limite
+  do histórico;
+  \item \textbf{\poc{5} (23)} --- módulos, pontos de interesse, determinismo
+  por semente (seis sementes) e conectividade por busca em largura;
+  \item \textbf{\poc{6} (30)} --- tutorial, missão completa por interação
+  real, áudio (efeitos e ambiência em laço completo), salvamento e
+  carregamento, geração da ala procedural, núcleo da IA e escolhas do
+  epílogo.
+\end{itemize}
+
+\section*{Testes do adaptador de IA}
+\label{ap:adapter}
+
+Dezesseis testes em Python exercitam o serviço local: contrato de entrada e
+saída, limites de tamanho da mensagem, validação de dados, conversão de
+intenção, resposta de erro do modelo, servidor indisponível e formato de
+resposta de \emph{fallback}.
+
+\section*{Arnês de evidências visuais}
+\label{ap:arnes}
+
+Uma cena dedicada posiciona o jogador em coordenadas pré-determinadas,
+opcionalmente conclui a missão (energia restabelecida e porta aberta) e salva
+imagens em 1280$\times$720. Variáveis de ambiente controlam o caminho do
+arquivo, a pose do jogador (posição e orientação) e a conclusão automática da
+missão; há ainda modos auxiliares para inspecionar o terminal da IA e para
+listar os elementos do cenário (NPC, luzes, letreiros e telas). As figuras
+dos Capítulos~\ref{cap:desenvolvimento} e~\ref{cap:resultados} foram geradas
+por esse instrumento.
+
+\section*{Evidências por classe}
+\label{ap:evidencias}
+
+As evidências do trabalho se organizam em cinco classes: (i) testes
+automatizados do motor; (ii) testes de contrato do adaptador; (iii) medições
+de desempenho e latência; (iv) capturas de tela em poses controladas; e (v)
+vídeo de demonstração. A matriz de rastreabilidade do projeto associa cada
+afirmação do texto final a uma dessas classes (ver
+MONOGRAFIA\_RASTREABILIDADE.md).

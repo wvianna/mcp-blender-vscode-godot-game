@@ -37,3 +37,31 @@ build/
 
 # --- Execução local (start.sh / stop.sh) ---
 .run/
+
+
+# Auxiliares da monografia LaTeX (o PDF final não é ignorado)
+monografia/*.aux
+monografia/*.bbl
+monografia/*.blg
+monografia/*.lof
+monografia/*.lot
+monografia/*.loq
+monografia/*.out
+monografia/*.toc
+monografia/*.fls
+monografia/*.fdb_latexmk
+monografia/*.synctex.gz
+monografia/_minted*/s
+
+# Auxiliares do artigo
+artigo/*.aux
+artigo/*.bbl
+artigo/*.blg
+artigo/*.lof
+artigo/*.lot
+artigo/*.out
+artigo/*.toc
+artigo/*.fls
+artigo/*.fdb_latexmk
+artigo/*.synctex.gz
+artigo/_minted*/s

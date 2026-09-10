@@ -1,0 +1,28 @@
+% Status dos critérios de aceitação (capítulo 6).
+\begin{table}[htbp]
+\centering
+\caption{Status dos critérios de aceitação e requisito de empacotamento.}
+\label{tab:aceitacao_resumo}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.5cm} >{\raggedright\arraybackslash}p{8.0cm} >{\raggedright\arraybackslash}p{2.6cm}@{}}
+\toprule
+Critério & Verificação & Status \\
+\midrule
+CA-001 & Movimento por ação semântica, colisão e piso & Aprovado (automatizado) \\
+CA-002 & Rotação de câmera por ação; limites de inclinação & Parcial (mouse = manual) \\
+CA-003 & Pausa e retomada com menu & Aprovado (automatizado) \\
+CA-004 & Zona morta configurável e tratamento de \emph{hotplug} & Parcial (joystick físico = manual) \\
+CA-005 & Carga do jogo sem assets externos obrigatórios & Aprovado (automatizado) \\
+CA-006 & Convite contextual e interação por proximidade & Aprovado (automatizado) \\
+CA-007 & Coleta, instalação no painel e avanço da missão no HUD & Aprovado (automatizado) \\
+CA-008 & Estados de equipamento serializáveis (desligado, falha, pronto, operando) & Aprovado (automatizado) \\
+CA-009 & \emph{Fallback} com o serviço de IA indisponível, sem travar & Aprovado (automatizado) \\
+CA-010 & Intenção fora do conjunto permitido convertida para \texttt{NONE} & Aprovado (automatizado) \\
+CA-011 & Mundo reage a eventos (NPC, luzes, tom da IA) & Aprovado (automatizado) \\
+CA-012 & Mesma semente produz o mesmo layout; salas alcançáveis & Aprovado (automatizado, 6 sementes) \\
+CA-013 & Jogo completo do início ao fim & Parcial (percurso humano = manual) \\
+FR-033 & Geração de executável independente & Aberto (modelos de exportação ausentes no ambiente) \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir da especificação e da execução da suíte.}
+\end{table}

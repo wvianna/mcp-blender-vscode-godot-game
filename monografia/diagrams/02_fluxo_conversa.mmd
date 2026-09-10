@@ -1,0 +1,19 @@
+%% Fluxo de uma mensagem ate a resposta (fonte Mermaid; figures/02_fluxo_conversa.png)
+sequenceDiagram
+    actor Jogador
+    participant T as Terminal (Godot)
+    participant C as Cliente HTTP (GDScript)
+    participant A as Adaptador (FastAPI)
+    participant O as Ollama (local)
+
+    Jogador->>T: digita a mensagem
+    T->>C: texto + estado do jogo
+    C->>A: POST /chat (JSON)
+    A->>A: valida entrada (Pydantic, 1 a 2000 caracteres)
+    A->>O: prompt (personalidade + contexto)
+    O-->>A: JSON (text, intent, confidence)
+    A->>A: sanitiza intent (ALLOWED_INTENTS)
+    A-->>C: resposta validada
+    C-->>T: exibe resposta
+    T-->>Jogador: texto da ARIA
+    Note over C,A: falha, erro ou timeout resultam em texto de fallback e intent NONE

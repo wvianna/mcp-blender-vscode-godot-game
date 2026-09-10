@@ -1,0 +1,87 @@
+% ---------------------------------------------------------------------------
+% main.tex — MONOGRAFIA — Laboratório 404
+% Autor: William da Silva Vianna — Instituto Federal Fluminense
+% Compilação: pdflatex -> bibtex -> pdflatex -> pdflatex  (ver build.sh)
+% Formatação ABNT aplicada manualmente (memoir); modelo institucional a validar.
+% ---------------------------------------------------------------------------
+\documentclass[12pt,a4paper,oneside]{memoir}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\shorthandoff{"}
+
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdftitle={Laboratório 404: desenvolvimento de um jogo sério 3D com inteligência artificial local para apoio ao ensino de automação industrial},
+  pdfauthor={William da Silva Vianna},
+  pdfsubject={Monografia de graduação em Engenharia},
+  pdfkeywords={jogos sérios; automação industrial; grandes modelos de linguagem; inferência local; Godot; Blender}
+}
+
+% --- layout ABNT (manual): margens 3/2 cm e espaçamento 1,5 ---
+\setlrmarginsandblock{3cm}{2cm}{*}
+\setulmarginsandblock{3cm}{2cm}{*}
+\checkandfixthelayout
+\OnehalfSpacing
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\emergencystretch=1em
+
+% --- capítulos numerados como "1 Título" (sem a palavra Capítulo) ---
+\renewcommand{\printchaptername}{\chapnamefont\thechapter}
+\renewcommand{\printchapternum}{}
+
+% --- legendas discretas (ABNT) ---
+\captionnamefont{\small\bfseries}
+\captiontitlefont{\small}
+
+% --- Quadros (float novo + lista própria) ---
+\newfloat{quadro}{htbp}{loq}
+\floatname{quadro}{Quadro}
+
+% --- abreviações auxiliares ---
+\newcommand{\poc}[1]{POC~#1}
+\newcommand{\aria}{ARIA}
+
+\begin{document}
+
+\input{pretextual}
+
+\mainmatter
+
+\input{chapters/01_introducao}
+\input{chapters/02_fundamentacao}
+\input{chapters/03_trabalhos_relacionados}
+\input{chapters/04_materiais_metodos}
+\input{chapters/05_desenvolvimento}
+\input{chapters/06_experimentos_resultados}
+\input{chapters/07_discussao}
+\input{chapters/08_conclusao}
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+% Apêndices (não usar \backmatter antes — corrompe a numeração/labels; ver lições do ambiente)
+\appendix
+\renewcommand{\printchaptername}{\chapnamefont\appendixname\space\thechapter}
+\renewcommand{\printchapternum}{}
+\input{appendices/apendice_a_requisitos}
+\input{appendices/apendice_b_testes}
+\input{appendices/apendice_c_repositorio}
+\input{appendices/apendice_d_diagnostico}
+
+\end{document}

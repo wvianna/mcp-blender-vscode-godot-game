@@ -1,0 +1,17 @@
+% Latências medidas (capítulo 6).
+\begin{table}[htbp]
+\centering
+\caption{Latências medidas da conversa com a IA local (\texttt{llama3.1:8b}) em três contextos independentes.}
+\label{tab:latencia}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{5.4cm} l r >{\raggedright\arraybackslash}p{3.4cm}@{}}
+\toprule
+Contexto & Intenção & Latência & Observação \\
+\midrule
+Chamada direta ao adaptador (partida fria) & DIAGNOSE & 22,0 s & confiança 0,9 \\
+Terminal no jogo (uso normal) & STATUS & 16,1 s & evidência visual capturada \\
+Cliente no jogo (teste ao vivo) & HINT & 12,9 s & 5 de 5 verificações \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026). Uma execução por contexto; valores indicativos, não estatísticos.}
+\end{table}

@@ -1,0 +1,46 @@
+\chapter{Conclusão}
+\label{cap:conclusao}
+
+Este trabalho descreveu o projeto, o desenvolvimento e a validação técnica do
+Laboratório 404, um jogo sério 3D no qual uma inteligência artificial local
+participa do mundo por meio de diálogo, sem controlá-lo. O objetivo geral ---
+desenvolver e validar tecnicamente um jogo dessa natureza, executável em
+computador pessoal sem GPU dedicada e com apoio procedural ao ensino de
+automação industrial --- foi atingido no nível de protótipo: as seis etapas
+previstas foram concluídas e demonstráveis; a suíte automatizada cobre 211
+verificações do motor mais 16 testes do adaptador, todas aprovadas; o
+desempenho atende ao critério de hardware modesto; e a integração com a IA
+funciona de ponta a ponta com degradação segura verificada.
+
+Os objetivos específicos foram cumpridos integralmente: a especificação com
+requisitos e critérios de aceitação foi escrita e mantida como contrato
+(\autoref{ap:requisitos}); o desenvolvimento incremental em provas de
+conceito foi executado com evidências a cada etapa (\autoref{cap:desenvolvimento});
+o pipeline de assets do Blender ao motor foi implementado com convenções de
+escala, nomenclatura e colisão; a IA local foi integrada em processo separado,
+com contrato validado, intenções restritas e \emph{fallback}; o mundo reativo
+e a geração procedural foram implementados e testados; a suíte de validação e
+o arnês de evidências foram construídos e executados; e as medições de
+desempenho e latência foram realizadas com limitações declaradas
+(\autoref{cap:resultados}).
+
+As contribuições principais são o padrão de \emph{IA diegética com capacidade
+limitada}, o processo incremental rastreável adequado a desenvolvimento
+individual assistido por agentes de IA, o artefato aberto e documentado e o
+registro de lições de engenharia e de ambiente que afetam a reprodutibilidade
+de projetos semelhantes (\autoref{sec:licoes}).
+
+As limitações permanecem claras e declaradas: ausência de estudo com usuários,
+amostra pequena de latências, modelo-alvo não executado, validações manuais de
+hardware pendentes, empacotamento independente não gerado e edições
+normativas ainda a conferir. Nenhuma delas invalida os resultados
+apresentados, mas todas delimitam o alcance das conclusões: o que este
+trabalho demonstra é viabilidade técnica e rastreabilidade de processo, não
+eficácia educacional.
+
+Como desdobramento imediato, foram propostos seis trabalhos futuros, do
+benchmark do modelo-alvo ao estudo controlado com estudantes
+(\autoref{sec:futuros}). O caminho natural é que a próxima etapa deste
+trabalho não seja construir mais jogo, e sim buscar evidência de aprendizagem:
+um instrutor ficcional que responde em segundos, não controla nada e está
+sempre disponível já existe; falta medir o que ele ensina.

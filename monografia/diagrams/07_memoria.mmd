@@ -1,0 +1,17 @@
+%% Camadas de memoria e estado (fonte Mermaid; figures/07_memoria.png)
+flowchart LR
+    subgraph C1["1. Sessao"]
+        A["Flags da partida atual"]
+    end
+    subgraph C2["2. Estado persistente"]
+        B["Equipamentos, energia, missao (save/load)"]
+    end
+    subgraph C3["3. Conhecimento narrativo"]
+        C["Fatos aprendidos sobre ARIA e o laboratorio"]
+    end
+    subgraph C4["4. Historico conversacional"]
+        D["Mensagens trocadas com a ARIA"]
+    end
+    C1 --> C2
+    C2 --> C3
+    C3 --> C4

@@ -1,0 +1,27 @@
+\chapter{Tela de diagnóstico de entrada}
+\label{ap:diagnostico}
+
+Este apêndice documenta o instrumento de calibração de controles do projeto,
+que corresponde aos requisitos FR-007 (diagnóstico) e FR-008 (conexão e
+desconexão a quente). A tela lista os dispositivos conectados, os eixos e os
+botões em tempo real, exibe o estado da última conexão ou desconexão e permite
+ajustar a zona morta aplicada a todas as ações de \emph{gameplay}. A
+Figura~\ref{fig:input_test} registra a tela em execução na máquina de
+referência.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.86\textwidth]{input_test.png}
+\caption{Tela de diagnóstico de entrada em execução: dispositivos detectados, eixos com valores instantâneos, botões pressionados, zona morta configurável e mensagem de estado da conexão.}
+\label{fig:input_test}
+\par\vspace{2pt}{\footnotesize Fonte: captura do autor (2026), gerada pela cena de captura do projeto em 1280$\times$720.}
+\end{figure}
+
+A tela cumpre dois papéis no projeto. O primeiro é de engenharia: como o
+adaptador USB de controle (modelo de PlayStation~1) enumera botões e eixos de
+maneira imprevisível, a calibração precisa ser observável --- e é essa tela
+que permite descobrir, em segundos, qual índice físico corresponde a cada
+ação, sem depender de tentativa e erro no jogo. O segundo papel é de
+auditoria: a tela é a única parte do projeto autorizada a ler índices
+numéricos de botão e eixo; todo o \emph{gameplay} consome apenas ações
+semânticas, e essa separação é verificável no código.

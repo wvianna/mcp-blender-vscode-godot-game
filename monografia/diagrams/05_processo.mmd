@@ -1,0 +1,11 @@
+%% Processo de desenvolvimento incremental (fonte Mermaid; figures/05_processo.png)
+flowchart TD
+    A["Auditoria do workspace"] --> B["Especificacao: requisitos FR/NFR + criterios de aceitacao"]
+    B --> C["Ciclo POC 1 a POC 6 - Regra de Ouro"]
+    C --> D["Implementacao da etapa"]
+    D --> E["Testes headless do motor + testes do adaptador"]
+    E --> F{"Todos passaram?"}
+    F -- "nao" --> D
+    F -- "sim" --> G["Evidencias: capturas, medicoes e video"]
+    G --> H["Atualizacao de STATUS/TASKS/HANDOFF"]
+    H --> C

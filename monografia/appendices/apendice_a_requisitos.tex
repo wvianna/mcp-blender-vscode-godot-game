@@ -1,0 +1,122 @@
+\chapter{Requisitos do sistema}
+\label{ap:requisitos}
+
+Este apêndice reproduz, de forma consolidada, os requisitos funcionais (FR) e
+não funcionais (NFR) do projeto, agrupados por etapa de desenvolvimento. Os
+requisitos foram escritos antes da implementação e funcionaram como contrato
+de cada iteração; cada um possui critério de aceitação associado, no formato
+DADO/QUANDO/ENTÃO (ver \autoref{ap:testes} para a suíte correspondente).
+
+\section*{Requisitos funcionais --- \poc{1} (fundação jogável)}
+\label{ap:fr1}
+\begin{itemize}
+  \item \textbf{FR-001} --- O projeto usa um mapa de entrada com ações
+  semânticas (mover, olhar, interagir, cancelar, correr, lanterna, inventário,
+  pausa, avançar diálogo). É proibido fixar índices de botão ou eixo de
+  joystick no \emph{gameplay}.
+  \item \textbf{FR-002} --- O jogador se movimenta por teclado (WASD/setas) e
+  pelo analógico esquerdo do joystick.
+  \item \textbf{FR-003} --- A câmera é controlada por mouse e, quando o
+  adaptador expõe os eixos, pelo analógico direito.
+  \item \textbf{FR-004} --- Gravidade e colisão impedem atravessar paredes e
+  piso.
+  \item \textbf{FR-005} --- Menu de pausa acionado por teclado e joystick.
+  \item \textbf{FR-006} --- HUD mínimo com objetivo e convite de interação.
+  \item \textbf{FR-007} --- Tela de diagnóstico de entrada lista dispositivos,
+  eixos e botões em tempo real, com zona morta configurável (padrão 0,15).
+  \item \textbf{FR-008} --- Conexão e desconexão a quente do joystick sem
+  quebrar a execução.
+\end{itemize}
+
+\section*{Requisitos funcionais --- \poc{2} (laboratório funcional)}
+\label{ap:fr2}
+\begin{itemize}
+  \item \textbf{FR-009} --- Sistema de interação desacoplado, com detecção por
+  proximidade, convite contextual e sinal de interação.
+  \item \textbf{FR-010} --- Inventário diegético (kit técnico) com itens
+  coletáveis (fusível F-17, módulo RS-404, chave).
+  \item \textbf{FR-011} --- Portas abrem e fecham, podendo depender de
+  permissões ou estado.
+  \item \textbf{FR-012} --- Equipamentos possuem estados serializáveis
+  (desligado, falha, pronto, operando).
+  \item \textbf{FR-013} --- Missão principal em seis passos: localizar
+  fusível, localizar módulo, instalar ambos, reiniciar CLP, diagnosticar bomba
+  e abrir a porta do corredor.
+  \item \textbf{FR-014} --- Retroalimentação visual e sonora para interações e
+  mudanças de estado.
+  \item \textbf{FR-015} --- Sala 3D modelada no Blender e exportada em GLB,
+  com identidade visual conforme o projeto de arte do laboratório.
+\end{itemize}
+
+\section*{Requisitos funcionais --- \poc{3} (IA local)}
+\label{ap:fr3}
+\begin{itemize}
+  \item \textbf{FR-016} --- Adaptador local com endpoint de conversa que
+  valida a entrada, injeta contexto, chama o modelo e valida a saída.
+  \item \textbf{FR-017} --- A saída devolve texto e intenção estruturada; o
+  jogo aceita apenas as intenções cadastradas.
+  \item \textbf{FR-018} --- Cliente assíncrono no jogo com limite de tempo,
+  tratamento de erro e \emph{fallback} para mensagens pré-definidas.
+  \item \textbf{FR-019} --- Terminal de IA na interface, com entrada de texto,
+  histórico e resposta.
+  \item \textbf{FR-020} --- A personalidade da IA fica em arquivo de
+  configuração versionado, fora dos scripts.
+  \item \textbf{FR-021} --- A IA não controla física nem executa comandos;
+  devolve apenas texto e intenções que o jogo valida.
+\end{itemize}
+
+\section*{Requisitos funcionais --- \poc{4} (mundo reativo)}
+\label{ap:fr4}
+\begin{itemize}
+  \item \textbf{FR-022} --- NPCs reagem ao estado do laboratório.
+  \item \textbf{FR-023} --- Memória separada em quatro camadas: sessão, estado
+  persistente, conhecimento narrativo e histórico conversacional.
+  \item \textbf{FR-024} --- Eventos alteram o mundo: luzes conforme energia,
+  portas conforme permissão e tom da IA após alerta ignorado; a iluminação é
+  em camadas (luz geral alinhada às luminárias visíveis e acentos por zona); e
+  a câmera de segurança acompanha o jogador após a energia ser restabelecida.
+\end{itemize}
+
+\section*{Requisitos funcionais --- \poc{5} (laboratório procedural)}
+\label{ap:fr5}
+\begin{itemize}
+  \item \textbf{FR-025} --- Módulos tipados (corredor, controle, bombas,
+  baterias, sensores, arquivo, contenção) com entradas, saídas, pontos de
+  interesse e iluminação.
+  \item \textbf{FR-026} --- Geração determinística por semente.
+  \item \textbf{FR-027} --- Conectividade garantida: nenhuma sala inacessível
+  e todos os pontos de interesse alcançáveis.
+\end{itemize}
+
+\section*{Requisitos funcionais --- \poc{6} (recorte vertical)}
+\label{ap:fr6}
+\begin{itemize}
+  \item \textbf{FR-028} --- Experiência jogável de 10 a 20 minutos, com começo,
+  meio e fim.
+  \item \textbf{FR-029} --- Tutorial de controles dentro do jogo.
+  \item \textbf{FR-030} --- Salvamento e carregamento de progresso.
+  \item \textbf{FR-031} --- Áudio ambiente, alarmes e efeitos.
+  \item \textbf{FR-032} --- Epílogo variável conforme a escolha do jogador.
+  \item \textbf{FR-033} --- Empacotamento em executável e demonstração sem
+  intervenção do desenvolvedor.
+\end{itemize}
+
+\section*{Requisitos não funcionais}
+\label{ap:nfr}
+\begin{itemize}
+  \item \textbf{NFR-001} --- Executar em computador sem GPU dedicada
+  (medido: 60 quadros por segundo limitados por sincronismo vertical em GPU
+  integrada, 1280$\times$720).
+  \item \textbf{NFR-002} --- Escala do Blender ao motor: 1 unidade = 1 metro.
+  \item \textbf{NFR-003} --- Modelo de linguagem local pequeno (alvo
+  \texttt{llama3.2:3b}; validação com \texttt{llama3.1:8b}).
+  \item \textbf{NFR-004} --- Limite de tempo de 30 segundos na chamada ao
+  modelo, com \emph{fallback}.
+  \item \textbf{NFR-005} --- Robustez de entrada: nenhum índice de botão fixo
+  no \emph{gameplay}.
+  \item \textbf{NFR-006} --- Segurança da IA: apenas intenções cadastradas;
+  resposta inválida converte para \texttt{NONE}.
+  \item \textbf{NFR-007} --- Assets neutros, ajustáveis por pós-processamento.
+  \item \textbf{NFR-008} --- Determinismo do laboratório procedural: mesma
+  semente, mesma disposição.
+\end{itemize}

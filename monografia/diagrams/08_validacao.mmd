@@ -1,0 +1,8 @@
+%% Pipeline de validacao (fonte Mermaid; figures/08_validacao.png)
+flowchart LR
+    E["Especificacao com criterios de aceitacao"] --> T["Suite headless do motor (POC 1 a 6)"]
+    E --> P["Testes do adaptador (Python)"]
+    E --> S["Arnes de capturas (posicionamento do jogador)"]
+    T --> R1["Evidencia: verificacoes do motor"]
+    P --> R2["Evidencia: testes de API"]
+    S --> R3["Evidencia: imagens 1280x720 e FPS"]

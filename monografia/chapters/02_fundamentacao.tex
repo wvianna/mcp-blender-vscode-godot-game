@@ -1,0 +1,253 @@
+\chapter{Fundamentação teórica}
+\label{cap:fundamentacao}
+
+Este capítulo reúne os conceitos que sustentam as decisões de projeto
+descritas nos capítulos seguintes: jogos sérios e aprendizagem; o domínio da
+automação industrial como contexto educacional; grandes modelos de linguagem e
+inferência local; a integração de IA em jogos; as ferramentas de
+desenvolvimento utilizadas; e os princípios de verificação adotados.
+
+\section{Jogos sérios e aprendizagem}
+\label{sec:jogos_serios}
+
+O termo \emph{jogos sérios} designa jogos cujo propósito principal não é o
+entretenimento, e sim um objetivo explícito --- educacional, de treinamento ou
+de simulação \cite{abt1970serious}. Décadas de pesquisa em aprendizagem com
+jogos mostraram que essa mídia pode incorporar princípios pedagógicos de forma
+orgânica: identidade do jogador, experimentação ativa, risco controlado,
+problemas bem ordenados e retroalimentação imediata \cite{gee2003what}. A
+transição da simulação para a realidade virtual e desta para os jogos
+consolidou a ideia de que ambientes virtuais interativos podem treinar
+procedimentos antes que o aprendiz os execute no mundo físico
+\cite{zyda2005from}.
+
+Revisões do campo organizam os jogos sérios por aplicação (saúde, defesa,
+educação, planejamento urbano, treinamento profissional) e destacam que a
+avaliação de impacto segue sendo um desafio metodológico
+\cite{laamarti2014overview}. Essa observação é relevante para o presente
+trabalho: a validação aqui realizada é técnica --- funcionalidade, desempenho,
+latência, reprodutibilidade --- e não uma medição de aprendizagem. A separação
+entre o que foi verificado e o que permanece como hipótese educacional é
+deliberada e está declarada nas limitações (ver \autoref{cap:discussao}).
+
+\section{Automação industrial como domínio educacional}
+\label{sec:automacao}
+
+A automação industrial é um domínio de ensino em que a distância entre teoria
+e prática cobra um preço alto. Conceitos como lógica de intertravamento,
+estados de equipamento, diagnóstico de falhas e leitura de diagramas
+\emph{ladder} tornam-se concretos apenas quando o estudante os vê operando em
+um sistema físico. A norma IEC~61131-3 padroniza as linguagens de programação
+de controladores lógicos programáveis, incluindo a linguagem de diagrama de
+contatos (\emph{ladder}) \cite{iec61131}; o trabalho educativo com CLPs gira,
+em grande parte, em torno dessas linguagens e da lógica de segurança que elas
+expressam.
+
+Bancadas didáticas completas, porém, são caras, ocupam espaço, exigem
+manutenção e impõem restrições de segurança. Uma simulação interativa não
+substitui a bancada --- não forma habilidades motoras nem expõe o estudante
+aos riscos reais ---, mas pode cumprir dois papéis complementares: preparar o
+estudante para o contato com o equipamento (familiaridade com nomenclatura,
+sequências de partida, leitura de sinais) e permitir prática adicional de
+diagnóstico em cenários de falha que seriam inconvenientes ou perigosos de
+reproduzir no laboratório físico. O Laboratório 404 foi projetado com esse
+papel: seu cenário industrial ficcional pede que o jogador localize
+componentes, instale módulos em um painel, reinicie um CLP, diagnostique uma
+bomba e restabeleça um intertravamento de porta.
+
+\section{Grandes modelos de linguagem}
+\label{sec:llm}
+
+Grandes modelos de linguagem são redes neurais de grande porte treinadas para
+prever o próximo elemento de uma sequência de texto. A arquitetura
+\emph{Transformer}, baseada em mecanismos de atenção e publicada em 2017,
+viabilizou paralelismo e escala e é o substrato da maior parte dos modelos
+contemporâneos \cite{vaswani2017attention}. Em uso, o modelo recebe um
+\emph{prompt} (instruções e contexto) e gera uma resposta token a token; a
+qualidade da resposta depende do treinamento, do tamanho do modelo e da
+construção do prompt.
+
+Duas características desses modelos importam diretamente para um jogo. A
+primeira é que eles \emph{geram texto plausível}, não necessariamente verdade:
+um modelo pode inventar procedimentos, componentes ou valores inexistentes
+(fenômeno conhecido como alucinação). A segunda é que a geração tem custo:
+quanto maior o modelo, mais memória e mais tempo de inferência. O tempo total
+percebido pelo usuário decompõe-se em parcelas que este trabalho mede e
+reporta separadamente:
+
+\begin{equation}
+\label{eq:latencia}
+t_{\text{resposta}} = t_{\text{rede}} + t_{\text{fila}} + t_{\text{inferência}} + t_{\text{validação}} \quad [\text{s}],
+\end{equation}
+
+\noindent em que $t_{\text{rede}}$ cobre a comunicação HTTP local,
+$t_{\text{fila}}$ aguarda recursos do modelo, $t_{\text{inferência}}$ é o
+tempo de geração no modelo e $t_{\text{validação}}$ agrega a validação de
+contrato e de intenções. Em um ambiente de jogo, se qualquer parcela crescer
+além do aceitável, o sistema precisa de uma saída segura --- no caso deste
+trabalho, a resposta de \emph{fallback}.
+
+Em um contexto educacional, a alucinação deixa de ser um detalhe curioso e
+passa a ser um risco de projeto. A resposta adotada aqui é de engenharia:
+restringir a superfície de ação do modelo. A IA pode conversar livremente
+dentro do tema, mas sua saída é reduzida a texto e a um rótulo de intenção
+pertencente a um conjunto finito; nenhuma resposta do modelo é executada como
+comando.
+
+\section{Integração de IA em jogos}
+\label{sec:ia_jogos}
+
+O levantamento de Gallotta \emph{et al.} mapeia os papéis que LLMs podem
+assumir em jogos --- geração de conteúdo, personagens jogáveis e não jogáveis,
+apoio ao projeto, testes --- e discute limites práticos como custo, latência e
+confiabilidade \cite{gallotta2024largelanguage}. Do lado da pesquisa em
+agentes, \emph{Generative Agents} mostrou que agentes que registram
+experiências em linguagem natural, refletem e planejam produzem comportamento
+social emergente e verossímil \cite{park2023generative}; \emph{Voyager}
+demonstrou um agente que aprende continuamente em um jogo aberto consultando
+um modelo externo e escrevendo código \cite{wang2023voyager}. Ambos os
+trabalhos exploram a \emph{autonomia}: quanto mais o modelo decide e age, mais
+rico (e mais imprevisível) o comportamento resultante.
+
+O presente trabalho investiga a hipótese complementar: que uma IA
+\emph{diegética e consultiva} --- que participa da ficção, comenta o estado do
+mundo e responde a perguntas, sem agir --- oferece valor narrativo e percebido
+suficiente para um jogo educacional, com custo de risco muito menor. Essa
+posição é compatível com a leitura do levantamento citado, que identifica nas
+limitações das LLMs exatamente os pontos que um projeto educacional precisa
+controlar: confiabilidade, previsibilidade e custo \cite{gallotta2024largelanguage}.
+
+\section{Inferência local}
+\label{sec:inferencia_local}
+
+Executar o modelo na própria máquina elimina dependência de serviços externos,
+dispensa chaves de aplicação e mantém o conteúdo local; o Ollama é uma
+ferramenta consolidada para esse cenário, capaz de executar modelos abertos em
+hardware de consumidor \cite{ollama2026}. As compensações são conhecidas:
+modelos menores geram respostas em escalas de segundos, o que restringe seu
+uso a interações conversacionais por turnos em vez de reações em tempo real.
+Para um jogo educacional, essa restrição é compatível com o formato adotado:
+o diálogo com a IA acontece em um terminal, com pausa natural para reflexão.
+
+\section{Desenvolvimento de jogos com Godot e Blender}
+\label{sec:godot_blender}
+
+O motor Godot organiza o jogo em cenas e nós, com a linguagem GDScript para a
+lógica; a documentação oficial descreve tanto o modelo de cenas quanto o
+sistema de \emph{input} por ações nomeadas, que permite mapear teclado e
+controles analógicos sem acoplar o código a índices de botão
+\cite{godot2026}. O Blender cobre a produção dos assets 3D --- modelagem,
+materiais e exportação --- e o formato glTF~2.0, em sua variante binária GLB,
+foi projetado como formato de transmissão e carga de cenas 3D em tempo real
+\cite{blender2026,khronos2026gltf}.
+
+Para um jogo executável em computador pessoal sem GPU dedicada, três decisões
+de projeto são determinantes: controlar a complexidade geométrica e o número
+de materiais; preferir um renderizador compatível com hardware modesto (no
+Godot, a estratégia \texttt{gl\_compatibility}); e medir o desempenho em
+quadros por segundo na máquina-alvo. O detalhamento dessas decisões no
+projeto está no \autoref{cap:desenvolvimento}.
+
+\section{Serviços locais e contratos de dados}
+\label{sec:servicos}
+
+Manter a IA em um processo separado do jogo tem uma consequência de engenharia
+direta: a comunicação entre eles precisa de um contrato explícito. O arcabouço
+FastAPI permite expor um serviço HTTP local com validação automática de dados
+de entrada e saída; a biblioteca Pydantic descreve e valida os modelos de
+dados em Python \cite{fastapi2026,pydantic2026,python2026}. O servidor Uvicorn executa
+esse serviço \cite{uvicorn2026} e a comunicação é feita por requisições HTTP
+com JSON, um formato de intercâmbio textual simples e legível.
+
+A adoção de um contrato validado nos dois lados --- adaptador e cliente no
+jogo --- é o que permite tratar a IA como um componente potencialmente
+falível: entradas dentro de limites, saídas dentro de um esquema conhecido e
+respostas de erro previsíveis. Essa arquitetura de fronteira é o coração do
+desenho de segurança adotado neste trabalho.
+
+\section{Verificação, validação e processo}
+\label{sec:verificacao}
+
+Verificar é responder se o sistema foi construído conforme a especificação;
+validar é responder se ele resolve o problema proposto. A prática de escrever
+testes antes ou junto da implementação --- popularizada pelo desenvolvimento
+orientado a testes \cite{beck2002tdd} --- é uma forma de manter a verificação
+próxima do código. Pesquisas em engenharia de software de sistemas
+informacionais propõem, para artefatos tecnológicos, o ciclo
+projeto--construção--avaliação, em que cada afirmação sobre o artefato é
+acompanhada de evidência \cite{hevner2004design}. Para avaliação experimental
+em engenharia de software, é prática corrente explicitar hipóteses, variáveis,
+ameaças à validade e limitações \cite{wohlin2012experimentation}.
+
+Este trabalho adota uma variante pragmática desses princípios, adequada a um
+desenvolvimento conduzido por uma pessoa com apoio de agentes de IA: uma
+especificação com requisitos e critérios de aceitação verificáveis, um ciclo
+incremental em que cada etapa termina demonstrável, uma suíte automatizada
+executável por linha de comando e um registro de evidências que inclui imagens
+e medições. A formalização desse processo, incluindo a matriz de
+rastreabilidade, está no \autoref{cap:metodos} e no
+\autoref{ap:requisitos}.
+
+\section{Simulação, emulação e laboratórios virtuais}
+\label{sec:simulacao}
+
+Ambientes virtuais de treinamento ocupam um espectro que vai da simulação
+aproximada à emulação fiel. Na \emph{simulação}, reproduz-se o comportamento
+relevante de um sistema com as simplificações necessárias para tornar o modelo
+computacionalmente viável; na \emph{emulação}, procura-se reproduzir o
+funcionamento do equipamento original com alto grau de fidelidade, incluindo
+tempos e protocolos. A escolha entre os dois polos depende do objetivo de
+aprendizagem: para familiarização com procedimentos e diagnóstico, a simulação
+costuma bastar; para validação de programas de CLP, a emulação é o alvo
+[REFERÊNCIA NECESSÁRIA: revisão sobre emuladores de CLP para ensino].
+
+O conceito contemporâneo de gêmeo digital --- um modelo virtual conectado a um
+sistema físico, alimentado por seus dados --- amplia essa discussão, mas
+também a desloca: o gêmeo digital pressupõe o sistema físico existente. Um
+laboratório virtual educacional, como o proposto neste trabalho, opera em
+sentido inverso: existe antes e independentemente do equipamento, para
+preparar o estudante que um dia o operará [REFERÊNCIA NECESSÁRIA: estudos de
+laboratórios virtuais e remotos na educação em engenharia].
+
+Essa distinção importa para a interpretação dos resultados deste trabalho: o
+Laboratório 404 é uma \emph{simulação ficcional de processos industriais}, não
+um emulador de CLP. Sua fidelidade é de procedimento e de nomenclatura ---
+fusível, módulo, painel, CLP, bomba, intertravamento de porta ---, e não de
+protocolo ou de tempo real.
+
+\section{Engenharia de requisitos e especificação}
+\label{sec:requisitos}
+
+A engenharia de requisitos trata da descoberta, documentação e manutenção do
+que um sistema deve fazer (requisitos funcionais) e de como deve se comportar
+em termos de qualidade e restrição (requisitos não funcionais)
+[REFERÊNCIA NECESSÁRIA: fonte canônica de engenharia de requisitos]. Em
+projetos pequenos e solitários, a tentação de dispensar esse registro é
+grande; o custo aparece depois, na forma de retrabalho e de afirmações não
+verificáveis sobre o produto.
+
+Neste trabalho, adotou-se uma prática de especificação leve, porém completa
+para os fins de verificação: cada requisito recebeu identificador estável; os
+requisitos não funcionais foram escritos como metas mensuráveis (por exemplo,
+executar em GPU integrada a uma taxa mínima de quadros; responder a uma
+mensagem da IA dentro de um limite de tempo); e cada requisito funcional
+ganhou um critério de aceitação observável, no formato DADO/QUANDO/ENTÃO. O
+formato força a explicitação de três coisas que, de outro modo, ficariam
+implícitas: a pré-condição, o estímulo e o resultado esperado --- inclusive em
+situações de erro, que costumam ser as mais negligenciadas.
+
+A matriz de rastreabilidade fecha o ciclo ao associar cada requisito ao teste
+que o verifica e à evidência que o comprova. É essa matriz que permite
+responder, a qualquer momento, à pergunta central de uma defesa técnica:
+\emph{como você sabe que isso funciona?}
+
+\section{Considerações do capítulo}
+\label{sec:consideracoes_fundamentacao}
+
+A fundamentação deste trabalho combina três campos que costumam caminhar
+separados: a aprendizagem por jogos, a engenharia de software de sistemas
+interativos e a tecnologia de modelos de linguagem. É dessa combinação que
+surge o desenho investigado nos capítulos seguintes: um jogo sério 3D, com
+cenário de automação industrial, cuja IA local é deliberadamente limitada a
+conversar --- e é justamente essa limitação que torna o conjunto previsível o
+bastante para uso educacional.

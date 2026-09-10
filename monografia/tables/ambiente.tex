@@ -1,0 +1,25 @@
+% Tabela de ambiente de referência (usada no capítulo 4).
+\begin{table}[htbp]
+\centering
+\caption{Ambiente de referência utilizado em todas as medições (verificado em 2026-09-10).}
+\label{tab:ambiente}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.4cm} >{\raggedright\arraybackslash}p{9.4cm}@{}}
+\toprule
+Item & Versão ou configuração \\
+\midrule
+Sistema operacional & Ubuntu 24.04.4 LTS (64 bits) \\
+Processador & AMD Ryzen 7 5700U com Radeon Graphics \\
+Memória principal & 30 GiB \\
+GPU & GPU integrada AMD Radeon Graphics (sem GPU dedicada) \\
+Motor de jogo & Godot 4.5 (\texttt{4.5.stable.official.876b29033}), renderizador \texttt{gl\_compatibility} \\
+Modelagem 3D & Blender 5.2.1 LTS \\
+Linguagem do adaptador & Python 3.12.3 \\
+Bibliotecas do adaptador & FastAPI 0.141.1; Uvicorn 0.52.4; Pydantic 2.13.5; requests 2.34.2 \\
+Inferência local & Ollama; modelo-alvo \texttt{llama3.2:3b} (não instalado no ambiente); validação realizada com \texttt{llama3.1:8b} \\
+Formato de assets & glTF 2.0 binário (GLB) \\
+Resolução de execução & 1280$\times$720 com sincronismo vertical (vsync) \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026); valores obtidos por comando na máquina de referência.}
+\end{table}

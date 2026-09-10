@@ -1,0 +1,75 @@
+\chapter{Repositório do projeto}
+\label{ap:repositorio}
+
+Este apêndice descreve a organização do repositório e os comandos necessários
+para reproduzir a execução, os testes e as evidências.
+
+\section*{Organização dos diretórios}
+\label{ap:arvore}
+
+\begin{verbatim}
+lab404/
+|-- assets/            # GLB exportado do Blender e lista de assets
+|-- artigo/            # artigo cientifico do projeto (LaTeX)
+|-- audio/             # efeitos sonoros originais (gerados por script)
+|-- config/            # mapa de entrada e personalidade da IA
+|-- design/            # conceito visual e level design
+|-- docs/              # documentacao, imagens e videos de evidencia
+|-- monografia/        # esta monografia (LaTeX + PDF)
+|-- scenes/            # cenas do jogo (.tscn)
+|-- scripts/           # GDScript do jogo + adaptador de IA (Python)
+|-- tests/             # suite automatizada (motor + Python)
+|-- tools/             # gerador de audio
+|-- start.sh / stop.sh # ligar e desligar jogo e servico
+|-- SPECIFICATION.md   # requisitos FR/NFR e criterios de aceitacao
+`-- STATUS.md / TASKS.md / HANDOFF.md / AGENTS.md
+\end{verbatim}
+
+\section*{Comandos de reprodução}
+\label{ap:comandos}
+
+\begin{itemize}
+  \item \textbf{Verificação funcional completa:} \texttt{tests/run\_all.sh}
+  (executa as cenas de teste do motor e os testes do adaptador);
+  \item \textbf{execução do jogo:} \texttt{godot4 --path .} ou
+  \texttt{./start.sh} (que também inicia o serviço de IA, quando o ambiente
+  Python existe);
+  \item \textbf{serviço de IA:} \texttt{.venv/bin/uvicorn
+  scripts.aria\_adapter:app --port 8000}, com o modelo local servido pelo
+  Ollama;
+  \item \textbf{inspeção do asset 3D:} script de contagem de nós, materiais e
+  colisões do arquivo GLB;
+  \item \textbf{evidências visuais:} execução da cena de captura com as
+  variáveis de pose e de conclusão da missão;
+  \item \textbf{compilação desta monografia:}
+  \texttt{monografia/build.sh} (pdflatex, bibtex e duas passagens
+  adicionais).
+\end{itemize}
+
+\section*{Documentos de controle do projeto}
+\label{ap:controle}
+
+O desenvolvimento manteve cinco documentos de estado que registram, de forma
+contínua, o que está pronto, o que está pendente e quais são as evidências:
+especificação síncrona (\texttt{SPECIFICATION.md}), estado
+(\texttt{STATUS.md}), tarefas (\texttt{TASKS.md}), transferência entre agentes
+(\texttt{HANDOFF.md}) e regras de projeto (\texttt{AGENTS.md}). A monografia
+mantém, no diretório \texttt{monografia/}, cinco arquivos de controle que
+registram o estado desta produção acadêmica:
+
+\begin{itemize}
+  \item \texttt{MONOGRAFIA\_STATUS.md};
+  \item \texttt{MONOGRAFIA\_PLANO.md};
+  \item \texttt{MONOGRAFIA\_EVIDENCIAS.md};
+  \item \texttt{MONOGRAFIA\_RASTREABILIDADE.md};
+  \item \texttt{MONOGRAFIA\_PENDENCIAS.md}.
+\end{itemize}
+
+\section*{Disponibilidade}
+\label{ap:disponibilidade}
+
+O código, a especificação, as capturas e o vídeo de demonstração estão
+publicamente disponíveis \cite{lab404repo,lab404video}. As imagens usadas
+nesta monografia foram copiadas do diretório de evidências do projeto; os
+diagramas deste documento possuem código-fonte versionado (formato Mermaid
+\cite{mermaid2026}) e são regeneráveis por comando.

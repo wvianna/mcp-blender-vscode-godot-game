@@ -1,0 +1,23 @@
+% Verificações automatizadas por etapa (capítulo 6).
+\begin{table}[htbp]
+\centering
+\caption{Verificações automatizadas por etapa do projeto (execução de referência de 2026-09-10).}
+\label{tab:testes}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.6cm} >{\raggedright\arraybackslash}p{8.4cm} >{\centering\arraybackslash}p{2.2cm}@{}}
+\toprule
+Etapa & Escopo validado & Verificações \\
+\midrule
+\poc{1} & Fundação jogável: entrada semântica, movimento, colisão, câmera, pausa, HUD e diagnóstico de entrada & 77 \\
+\poc{2} & Laboratório funcional: interação, inventário, porta, missão, identidade visual da sala & 34 \\
+\poc{3} & IA: adaptador, terminal, limites de tempo, validação de intenção e \emph{fallback} & 25--26 \\
+\poc{4} & Mundo reativo: NPC, luzes por energia, câmera de segurança, tom da IA e memória em camadas & 21 \\
+\poc{5} & Laboratório procedural: determinismo por semente e conectividade entre módulos & 23 \\
+\poc{6} & Recorte vertical: tutorial, missão completa, persistência, áudio e epílogo & 30 \\
+Adaptador & API de IA (Python): contratos, validação, erros e limites & 16 \\
+\midrule
+\textbf{Total} & & \textbf{211 + 16} \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir da execução de \texttt{tests/run\_all.sh}. A etapa \poc{3} vale 25 com o adaptador no ar e 26 com o adaptador desligado.}
+\end{table}

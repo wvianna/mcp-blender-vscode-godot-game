@@ -1,0 +1,8 @@
+%% Geracao procedural com conectividade garantida (fonte Mermaid; figures/06_gerador.png)
+flowchart TD
+    S["Semente (seed)"] --> G["Gerador de modulos"]
+    G --> M["Modulos com entradas, saidas e pontos de interesse"]
+    M --> B["Busca em largura (BFS) de conectividade"]
+    B --> V{"Todas as salas alcancaveis?"}
+    V -- "nao" --> G
+    V -- "sim" --> L["Layout final deterministico"]

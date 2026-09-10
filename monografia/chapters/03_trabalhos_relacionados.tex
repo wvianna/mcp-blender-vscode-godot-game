@@ -1,0 +1,107 @@
+\chapter{Trabalhos relacionados}
+\label{cap:relacionados}
+
+Este capítulo posiciona o Laboratório 404 em relação a três frentes de
+trabalhos: jogos sérios aplicados à engenharia, agentes e personagens
+baseados em LLMs e ferramentas abertas de desenvolvimento de jogos. A
+comparação é qualitativa: os trabalhos citados perseguem objetivos distintos
+e não há, neste trabalho, experimento comparativo controlado
+\cite{wohlin2012experimentation}.
+
+\section{Jogos sérios aplicados à engenharia e à automação}
+\label{sec:rel_jogos}
+
+A literatura de jogos sérios consolidou taxonomias e aplicações em saúde,
+defesa, educação e treinamento profissional \cite{laamarti2014overview}, e a
+transição da simulação para os jogos interativos é um marco reconhecido do
+campo \cite{zyda2005from}. No recorte da engenharia, a lacuna que este
+trabalho explora é específica: existem simuladores consagrados de processos
+industriais e plataformas de treinamento com CLPs, mas a maior parte delas é
+voltada à operação de um equipamento específico, exige licenças comerciais ou
+depende de bancadas. Um jogo sério de laboratório de automação, executável em
+um computador comum, com IA conversacional integrada e ciclo de
+desenvolvimento documentado, é o espaço em que este trabalho se move.
+[REFERÊNCIA NECESSÁRIA: revisão sistemática de jogos sérios específicos para
+ensino de CLP e automação industrial.]
+
+\section{Agentes generativos e personagens com LLM}
+\label{sec:rel_agentes}
+
+\emph{Generative Agents} \cite{park2023generative} demonstrou que agentes com
+memória em linguagem natural, reflexão e planejamento produzem comportamento
+social verossímil e emergente em um ambiente interativo povoado por dezenas de
+personagens. \emph{Voyager} \cite{wang2023voyager} levou a autonomia ao
+extremo em um jogo aberto: o agente mantém uma biblioteca de habilidades em
+código, recebe retroalimentação do ambiente e melhora iterativamente,
+consultando um modelo de grande porte por interface indireta; o resultado são
+ganhos expressivos de exploração medidos pelos autores.
+
+Esses trabalhos tratam a autonomia como recurso central. O Laboratório 404
+adota a decisão inversa: a IA não decide, não executa e não altera estado; ela
+conversa. Para um jogo educacional, essa escolha tem uma consequência de
+engenharia importante --- o comportamento do sistema permanece verificável
+pelo jogador (e pelo avaliador) mesmo quando o modelo de linguagem falha,
+demora ou responde de forma inesperada.
+
+\section{LLMs em jogos: papéis e limites}
+\label{sec:rel_llms}
+
+O levantamento de Gallotta \emph{et al.} \cite{gallotta2024largelanguage}
+organiza os papéis das LLMs em jogos --- criação de conteúdo, agentes,
+assistentes de projeto, testes --- e reconcilia potencial e limitações:
+alucinação, custo, latência e controle. O presente trabalho se alinha a essa
+agenda ao escolher, para a IA, o papel de \emph{personagem consultivo}: dentro
+da ficção, a IA tem identidade, memória de contexto e tom; fora da ficção, seu
+poder de ação é nulo.
+
+\section{Ferramentas abertas de desenvolvimento}
+\label{sec:rel_ferramentas}
+
+Motores e cadeias de produção abertas --- Godot \cite{godot2026}, Blender
+\cite{blender2026} e o formato glTF \cite{khronos2026gltf} --- reduzem o custo
+de entrada de projetos educacionais e permitem que o artefato seja auditado e
+reproduzido. O Laboratório 404 foi construído inteiramente sobre essa base,
+com um adaptador local em Python \cite{fastapi2026,pydantic2026} e inferência
+via Ollama \cite{ollama2026}, e mantém públicos o código, a especificação e as
+evidências \cite{lab404repo,lab404video}.
+
+\section{Síntese comparativa}
+\label{sec:rel_sintese}
+
+O Quadro~\ref{quad:comparativo} sintetiza a comparação qualitativa. As
+colunas descrevem \emph{propósitos de projeto}, não qualidades absolutas: os
+trabalhos citados alcançam objetivos que o Laboratório 404 deliberadamente não
+persegue (agência aberta e simulação social em larga escala), e vice-versa.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Comparação qualitativa de propósitos entre trabalhos relacionados e o Laboratório 404.}
+\label{quad:comparativo}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{3.4cm} >{\raggedright\arraybackslash}p{3.4cm} >{\raggedright\arraybackslash}p{3.0cm}@{}}
+\toprule
+Critério & Generative Agents \cite{park2023generative} & Voyager \cite{wang2023voyager} & Laboratório 404 (este trabalho) \\
+\midrule
+Objetivo central & Simulação social verossímil & Agente que aprende e progride & Jogo educacional de automação com IA \\
+Autonomia da IA & Alta (planeja, conversa, age na simulação) & Alta (escreve e executa código) & Nenhuma sobre o estado; apenas diálogo \\
+Modelo de linguagem & Grande porte & Grande porte, consultado a distância & Local, pequeno, sem serviço externo \\
+Ambiente de execução & Simulação 2D interativa & Jogo aberto (sandbox) & Jogo 3D, computador sem GPU dedicada \\
+Validação relatada & Comportamento emergente observado & Métricas de exploração no jogo & Requisitos, 211 verificações do motor, 16 testes de API, desempenho e latência medidos \\
+Artefatos abertos & Código liberado pelos autores & Código liberado pelos autores & Código, especificação, capturas e vídeo \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir das referências citadas.}
+\end{quadro}
+
+\section{Posicionamento e lacuna}
+\label{sec:rel_posicionamento}
+
+A lacuna endereçada por este trabalho é a combinação de quatro elementos, que
+não aparecem juntos nas frentes revisadas: (i) uma IA diegética com capacidade
+formalmente limitada e verificação dupla de intenções; (ii) inferência local
+em hardware de consumidor, com \emph{fallback} obrigatório; (iii) um jogo 3D
+completo, com missão, mundo reativo e progressão; e (iv) um processo de
+desenvolvimento com especificação, critérios de aceitação, suíte automatizada
+e evidências públicas. É dessa combinação que trata o
+\autoref{cap:desenvolvimento}; a validação correspondente está no
+\autoref{cap:resultados}.

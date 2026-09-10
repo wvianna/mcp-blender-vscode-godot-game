@@ -1,0 +1,235 @@
+\chapter{Materiais e métodos}
+\label{cap:metodos}
+
+Este capítulo descreve como o trabalho foi conduzido: a natureza da pesquisa,
+o processo de desenvolvimento, o ambiente e os instrumentos, as métricas
+coletadas e suas formas de coleta, os critérios de aceitação e as ameaças à
+validade do método. O objetivo é permitir que outro pesquisador reproduza as
+medições ou avalie criticamente as decisões tomadas.
+
+\section{Natureza e abordagem da pesquisa}
+\label{sec:natureza}
+
+A pesquisa é aplicada e de natureza tecnológica: seu produto é um artefato
+--- um jogo sério com IA local --- construído e avaliado tecnicamente. A
+abordagem é de estudo de caso único de desenvolvimento
+\cite{yin2015casestudy}, com o ciclo projeto--construção--avaliação descrito
+na literatura de \emph{design science} \cite{hevner2004design}: o problema e
+os requisitos foram fixados primeiro; o artefato foi construído em incrementos
+demonstráveis; e cada incremento foi avaliado por evidências definidas \emph{a
+priori} (testes automatizados, medições e capturas de tela). As ameaças à
+validade e as limitações do desenho estão declaradas na
+\autoref{sec:ameacas_metodo}. A formatação deste documento segue as normas
+ABNT aplicáveis a trabalhos acadêmicos \cite{nbr14724,nbr10520,nbr6023}; o
+modelo institucional definitivo deve ser validado com o autor.
+
+\section{Processo de desenvolvimento}
+\label{sec:processo}
+
+O processo adotado é uma adaptação pragmática do desenvolvimento orientado a
+especificação, em que a especificação e os critérios de aceitação precedem a
+implementação e funcionam como contrato de cada iteração. Três regras
+estruturaram o trabalho:
+
+\begin{enumerate}
+  \item \textbf{Regra de Ouro:} cada prova de conceito termina em uma versão
+  executável e demonstrável, com caminho de teste reproduzível; não se avança
+  com o protótipo quebrado.
+  \item \textbf{Input semântico:} o \emph{gameplay} consome apenas ações
+  nomeadas de um mapa de entrada (por exemplo, mover, interagir, pausar), e
+  nunca índices numéricos de botão --- que variam entre adaptadores USB.
+  \item \textbf{IA sem controle:} a IA devolve apenas texto e uma intenção de
+  um conjunto finito; nenhuma resposta é executada como comando.
+\end{enumerate}
+
+A Figura~\ref{fig:processo} resume o ciclo executado. A cada etapa, a
+implementação era seguida de testes automatizados; somente com a suíte verde o
+projeto avançava. Evidências visuais (capturas) e medições eram registradas
+junto com a atualização dos documentos de estado do projeto
+\cite{lab404repo}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{05_processo.png}
+\caption{Ciclo de desenvolvimento incremental adotado: especificação, implementação, verificação automatizada e registro de evidências.}
+\label{fig:processo}
+\end{figure}
+
+O desenvolvimento foi assistido por agentes de inteligência artificial no
+editor de código. Para que essa assistência permanecesse sob controle, os
+documentos de especificação, regras e estado foram mantidos versionados e
+foram tratados como a fonte de intenção: cada tarefa delegada a um agente
+referenciava requisitos e critérios de aceitação explícitos. Um servidor MCP
+\cite{mcp2026} expôs a cena do Blender à manipulação programática, o que
+permitiu conduzir a modelagem 3D e a exportação também dentro do fluxo
+assistido. A Figura~\ref{fig:arquitetura} (no
+\autoref{cap:desenvolvimento}) mostra o resultado arquitetural desse processo.
+
+\section{Ambiente de referência}
+\label{sec:ambiente}
+
+Todas as medições deste trabalho foram realizadas em uma única máquina de
+referência, descrita na Tabela~\ref{tab:ambiente}. A escolha é deliberada:
+o critério de projeto é a execução em computador pessoal sem GPU dedicada, e
+por isso nenhuma medição utiliza hardware especializado.
+
+\input{tables/ambiente}
+
+O projeto mantém um passo de importação de recursos (modelos GLB e áudio)
+executado por linha de comando, necessário na primeira execução de cada
+cópia do repositório; a suíte de testes e as capturas também são executadas
+por linha de comando, sem interface gráfica (quando aplicável) nem
+intervenção manual. A descrição do repositório, dos comandos e da organização
+dos diretórios está no \autoref{ap:repositorio}.
+
+\section{Instrumentos e métricas}
+\label{sec:instrumentos}
+
+A Tabela de instrumentos resume as métricas coletadas, o instrumento
+correspondente e a forma de coleta. Todas as métricas são produzidas por
+execução real do sistema na máquina de referência; nenhuma é estimada.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Instrumentos de avaliação e métricas coletadas.}
+\label{quad:instrumentos}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{4.2cm} >{\raggedright\arraybackslash}p{5.4cm}@{}}
+\toprule
+Métrica & Instrumento & Forma de coleta \\
+\midrule
+Verificações funcionais por etapa & Cenas de teste \emph{headless} do motor (uma por POC) & Execução de \texttt{tests/run\_all.sh}; contagem de verificações aprovadas impressa por cena \\
+Testes de contrato da IA & Suíte do adaptador em Python & Execução por linha de comando contra o serviço local \\
+Desempenho gráfico & Motor em execução com janela & Leitura de quadros por segundo do próprio motor, com sincronismo vertical, em 1280$\times$720 \\
+Latência da conversa & Cronometragem de três execuções independentes & Chamada direta ao adaptador (partida fria), terminal no jogo e cliente em teste ao vivo; valores obtidos do relatório de execução e da captura de evidência \\
+Complexidade do asset 3D & Inspeção programática do arquivo GLB & Contagem de nós, materiais e malhas de colisão por script \\
+Evidências visuais & Arnês de captura do projeto & Execução com variáveis de ambiente que posicionam o jogador, opcionalmente concluem a missão e salvam imagens em 1280$\times$720 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026).}
+\end{quadro}
+
+\section{Critérios de aceitação e rastreabilidade}
+\label{sec:criterios}
+
+Cada requisito funcional possui um critério de aceitação no formato
+DADO\slash QUANDO\slash ENTÃO, escrito antes da implementação. A
+Tabela~\ref{tab:aceitacao_resumo} (no \autoref{cap:resultados}) resume o
+status de cada critério; o Quadro~\ref{quad:ca_exemplos} apresenta dois
+exemplos representativos, um de cada subsistema crítico. A lista completa dos
+requisitos e critérios está no \autoref{ap:requisitos}.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Exemplos de critérios de aceitação usados como contrato de implementação.}
+\label{quad:ca_exemplos}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.4cm} >{\raggedright\arraybackslash}p{11.6cm}@{}}
+\toprule
+ID & Critério (resumo) \\
+\midrule
+CA-009 & DADO que o serviço de IA está indisponível ou lento, QUANDO o jogador envia uma mensagem, ENTÃO o jogo exibe uma resposta de \emph{fallback} dentro do limite de tempo, sem travar. \\
+CA-010 & DADO uma resposta do modelo, QUANDO a intenção não pertence ao conjunto permitido, ENTÃO ela é convertida para \texttt{NONE} e a resposta textual permanece válida. \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026), a partir da especificação do projeto.}
+\end{quadro}
+
+A rastreabilidade é mantida em duas matrizes. A primeira associa cada
+objetivo específico desta monografia aos métodos e evidências correspondentes;
+a segunda associa requisito, critério de aceitação, teste e evidência. Ambas
+estão consolidadas no arquivo de rastreabilidade do projeto
+(MONOGRAFIA\_RASTREABILIDADE.md) e resumidas no
+\autoref{cap:resultados}.
+
+\section{Procedimentos experimentais}
+\label{sec:procedimentos}
+
+Os procedimentos seguiram uma ordem fixa, executada ao final do
+desenvolvimento e repetida a cada alteração relevante:
+
+\begin{enumerate}
+  \item \textbf{Verificação funcional:} execução completa da suíte
+  \emph{headless} (etapas \poc{1} a \poc{6}) e da suíte do adaptador de IA,
+  registrando o número de verificações e falhas de cada cena;
+  \item \textbf{Verificação de integração ao vivo:} execução do jogo com o
+  adaptador e o modelo local ativos, enviando uma pergunta real pelo terminal
+  da IA e registrando a resposta e a latência;
+  \item \textbf{Medição de latência:} três contextos independentes --- chamada
+  direta ao adaptador em partida fria, mensagem pelo terminal com o jogo em
+  execução e teste ao vivo do cliente ---, todos com o mesmo modelo local;
+  \item \textbf{Medição de desempenho:} execução da cena completa em
+  1280$\times$720 com sincronismo vertical, lendo os quadros por segundo
+  reportados pelo motor;
+  \item \textbf{Evidências visuais:} geração de capturas em poses
+  pré-determinadas, incluindo o estado inicial, o estado após a missão
+  concluída e o terminal da IA com a resposta do modelo;
+  \item \textbf{Inspeção do artefato 3D:} medição programática do GLB
+  exportado (nós, materiais, colisões e tamanho em disco).
+\end{enumerate}
+
+Os itens que exigem presença física ou julgamento humano --- operação de
+mouse com captura de cursor, calibração do adaptador de joystick em hardware
+real e o percurso completo do início ao fim por uma pessoa --- estão
+declarados como pendentes de validação manual e não foram contabilizados como
+concluídos.
+
+\section{Ameaças à validade do método}
+\label{sec:ameacas_metodo}
+
+Quatro ameaças devem ser consideradas na leitura dos resultados. A primeira é
+de \textbf{generalização}: trata-se de um estudo de caso único, com um
+artefato construído por um único autor; os resultados não se generalizam
+automaticamente para outros jogos, outros modelos de linguagem ou outras
+máquinas. A segunda é de \textbf{medição}: as latências foram coletadas em
+três execuções por contexto, sem repetição estatística; são indicativas, não
+experimentais. A terceira é de \textbf{autoria}: o mesmo autor especificou,
+implementou e avaliou o artefato, o que aumenta o risco de viés de confirmação;
+a mitigação adotada é externa ao autor --- critérios escritos antes da
+implementação, testes automatizados executáveis por terceiros e artefatos
+públicos. A quarta é de \textbf{ambiente}: os resultados de desempenho valem
+para a máquina de referência; o capítulo de discussão registra duas
+particularidades de ambiente que afetaram a experiência de uso e que outros
+projetos podem encontrar (confinamento de pacote do motor e estado de áudio
+por aplicativo).
+
+\section{Planejado versus executado}
+\label{sec:planejado_executado}
+
+O trabalho distingue explicitamente o que foi planejado do que foi executado.
+O Quadro~\ref{quad:planejado} apresenta a distinção por componente; a coluna
+de status registra o que permanece aberto, sem conversão de intenção em
+resultado.
+
+\begin{quadro}[htbp]
+\centering
+\caption{Planejado versus executado, por componente do projeto.}
+\label{quad:planejado}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.0cm} >{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}p{4.2cm}@{}}
+\toprule
+Componente & Planejado & Executado e status \\
+\midrule
+Jogo (etapas \poc{1}--\poc{6}) & Seis provas de conceito demonstráveis & Executado; suíte automatizada verde \\
+IA local & Conversa com modelo local e \emph{fallback} & Executado com \texttt{llama3.1:8b}; modelo-alvo \texttt{llama3.2:3b} não instalado (aberto) \\
+Desempenho & Executar sem GPU dedicada & Executado a 60 FPS (vsync) na máquina de referência \\
+Medições de latência & Três contextos independentes & Executado (uma execução por contexto) \\
+Evidências visuais & Capturas em poses controladas e vídeo & Executado (capturas e vídeo de 68 s) \\
+Validação de hardware & Operar com joystick físico e mouse & Pendente (validação manual) \\
+Percurso humano (CA-013) & Jogo completo por uma pessoa & Pendente (validação manual) \\
+Empacotamento (FR-033) & Executável independente & Bloqueado por ausência de modelos de exportação no ambiente \\
+Estudo com usuários & Fora do escopo declarado & Não realizado (trabalho futuro) \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\footnotesize Fonte: elaborado pelo autor (2026).}
+\end{quadro}
+
+\section{Considerações do capítulo}
+\label{sec:consideracoes_metodos}
+
+O método combina elementos de engenharia de software --- especificação,
+rastreabilidade, testes automatizados --- com os procedimentos de medição
+descritos nesta seção. É esse conjunto que sustenta a afirmação, repetida ao
+longo do trabalho, de que cada número apresentado possui origem verificável:
+ele foi produzido por um comando, por uma execução ou por uma medição, e não
+por estimativa.

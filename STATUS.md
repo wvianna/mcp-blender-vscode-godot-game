@@ -4,6 +4,7 @@
 
 ## Concluído
 
+- **Monografia (2026-09-10):** `monografia/` — monografia de graduação em LaTeX (memoir + ABNT manual), com 8 capítulos, 4 apêndices, diagramas Mermaid renderizados e figuras do jogo; compila com `monografia/build.sh` em PDF de 69 páginas (47 de conteúdo), 0 overfull e 0 referências indefinidas. Números rastreados ao repositório; pendências declaradas em `monografia/MONOGRAFIA_PENDENCIAS.md` (modelo institucional, edições de normas, estudo com usuários, validação manual de hardware e empacotamento).
 - **Artigo científico (2026-09-10):** `artigo/` — artigo em LaTeX sobre o projeto (arquitetura, processo incremental e validação automatizada), com referências verificadas (arXiv/documentação) e números rastreados às fontes do repositório; compila com `artigo/build.sh` (pdflatex+bibtex) em PDF de 12 páginas, 0 overfull e 0 indefinidas. Pendências declaradas no texto com marcadores (`[REFERÊNCIA NECESSÁRIA]`, `[A CONFIRMAR]`, `[MEDIÇÃO DE FRAME TIME NÃO REALIZADA]`).
 - **POC 6 — Vertical slice (2026-09-10):** tutorial de controles, corredor → ala procedural (POC 5) → núcleo de ARIA → epílogo com três escolhas, save/load (`Lab404Save`), ambiência e efeitos sonoros originais (`tools/gen_audio.py`).
 - **POC 5 — Laboratório procedural (2026-09-10):** `Lab404LabGenerator` com módulos (entradas/saídas/POIs/luz), determinismo por `seed` e conectividade garantida por construção (árvore de expansão + BFS).

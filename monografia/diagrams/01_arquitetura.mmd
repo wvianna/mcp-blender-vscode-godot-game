@@ -1,0 +1,28 @@
+%% Arquitetura geral do sistema (fonte Mermaid; renderizado para figures/01_arquitetura.png)
+flowchart LR
+    subgraph Entrada
+        K["Teclado"] --> IM["Input Map"]
+        J["Joystick USB PS1"] --> IM
+    end
+
+    subgraph Jogo["Jogo - Godot 4.5"]
+        IM --> PC["Player Controller"]
+        PC --> W["Mundo e fisica"]
+        W --> GS["Game State"]
+        GS --> UI["HUD e menus"]
+        GS --> QS["Sistema de missao"]
+        GS --> EQ["Estados de equipamento"]
+        UI --> AT["Terminal da ARIA"]
+    end
+
+    subgraph IA["IA local - processos separados"]
+        AT --> AD["Adaptador FastAPI"]
+        AD --> OL["Ollama"]
+        OL --> AD
+        AD --> AT
+    end
+
+    subgraph Assets
+        BL["Blender 5.2.1"] --> GLB["GLB/glTF"]
+        GLB --> W
+    end

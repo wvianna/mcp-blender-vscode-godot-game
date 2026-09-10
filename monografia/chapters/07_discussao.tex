@@ -1,0 +1,175 @@
+\chapter{Discussão}
+\label{cap:discussao}
+
+\section{Respostas às questões de pesquisa}
+\label{sec:respostas}
+
+\textbf{RQ1 --- integração segura.} A arquitetura adotada --- IA em processo
+separado, contrato de dados validado, intenções restritas e sanitização em
+duas camadas independentes --- mostrou-se suficiente para que a IA
+participasse da ficção (conversa, comentários sobre o estado do mundo, tom
+variável) sem receber qualquer capacidade de alterar o jogo. Em todos os
+cenários de falha exercitados pelos testes --- serviço fora do ar, resposta
+inválida, modelo lento, JSON malformado, intenção desconhecida --- o pior
+resultado observado foi uma resposta de \emph{fallback}: nunca um travamento,
+nunca um comando executado.
+
+\textbf{RQ2 --- viabilidade em hardware modesto.} O jogo manteve 60 quadros
+por segundo (limitados por sincronismo vertical) em 1280$\times$720 na GPU
+integrada, com o cenário final completo, e a conversa local respondeu entre
+12,9~s e 22,0~s com um modelo de 8 bilhões de parâmetros. Essa ordem de
+grandeza é adequada à interação conversacional por turnos --- o formato
+adotado no jogo --- e inadequada a reações em tempo real, o que reforça a
+decisão de manter a IA fora do laço de controle.
+
+\textbf{RQ3 --- rastreabilidade.} A combinação de especificação prévia,
+critérios de aceitação verificáveis e suíte automatizada permitiu conduzir um
+desenvolvimento de autor único, com apoio de agentes de IA, mantendo cada
+afirmação do projeto atrelada a um teste ou a uma medição. As seis etapas
+fecharam com a suíte verde, e as pendências reais do protótipo (validação
+manual, empacotamento, modelo-alvo) estão declaradas --- não maquiadas.
+
+\section{Interpretação dos resultados}
+\label{sec:interpretacao}
+
+Três leituras merecem destaque. A primeira é que o valor educacional do
+artefato não foi medido: o que este trabalho demonstra é a viabilidade
+técnica de um instrutor ficcional sempre disponível, com custo de
+infraestrutura zero (nenhum serviço pago, nenhuma chave de API) e degradação
+segura. A segunda é que a latência de segundos molda o \emph{design} do
+diálogo: perguntas e respostas funcionam bem; reações instantâneas, não. A
+terceira é que o detalhamento visual tem custo gerenciável quando segue
+convenções (escala, nomenclatura, colisão embutida): o cenário cresceu sem
+comprometer o desempenho.
+
+\section{Comparação com a literatura}
+\label{sec:comparacao}
+
+A comparação com os trabalhos relacionados é qualitativa, conforme declarado
+no \autoref{cap:relacionados} e sintetizado no Quadro~\ref{quad:comparativo}.
+O contraste central é de propósito: \emph{Generative Agents}
+\cite{park2023generative} e \emph{Voyager} \cite{wang2023voyager} investigam o
+que a autonomia produz; o Laboratório 404 investiga o que se preserva quando
+a autonomia é removida. Esse desenho conversa diretamente com as limitações
+elencadas no levantamento de Gallotta \emph{et al.}
+\cite{gallotta2024largelanguage} --- confiabilidade, custo e latência ---,
+convertendo-as em restrições explícitas de projeto. Não há, contudo,
+experimento comparativo controlado entre os sistemas; uma comparação nesse
+nível exigiria métricas comuns (por exemplo, qualidade percebida do diálogo,
+custo por sessão, taxa de comportamento inesperado), o que este trabalho não
+produziu [ESTUDO COMPARATIVO NÃO REALIZADO].
+
+\section{Contribuições}
+\label{sec:contribuicoes}
+
+As contribuições deste trabalho são:
+
+\begin{enumerate}
+  \item \textbf{Um padrão de arquitetura de IA diegética com capacidade
+  limitada}, com contrato validado nos dois lados, sanitização em duas
+  camadas e \emph{fallback} obrigatório --- aplicável a outros jogos
+  educacionais que queiram incorporar LLMs com previsibilidade;
+  \item \textbf{um processo incremental rastreável}, com especificação,
+  critérios de aceitação, matriz de rastreabilidade e evidências automatizadas
+  e visuais, adequado a desenvolvimento de autor único com apoio de agentes de
+  IA;
+  \item \textbf{um artefato completo e aberto}: jogo, assets, adaptador,
+  suíte de testes, capturas e vídeo \cite{lab404repo,lab404video};
+  \item \textbf{medições de desempenho e latência} em hardware sem GPU
+  dedicada, com condições e limitações declaradas; e
+  \item \textbf{um registro de lições de engenharia e de ambiente} que afetam
+  a reprodutibilidade de projetos semelhantes (\autoref{sec:licoes}).
+\end{enumerate}
+
+\section{Limitações}
+\label{sec:limitacoes}
+
+As limitações são deliberadamente explícitas:
+
+\begin{itemize}
+  \item \textbf{Sem estudo com usuários.} Não há avaliação de aprendizagem,
+  usabilidade ou experiência; o valor educacional permanece como hipótese
+  [ESTUDO DE USUÁRIO NÃO REALIZADO].
+  \item \textbf{Amostra pequena de latência.} Três contextos, uma execução
+  cada; sem repetição estatística, sem variação de carga e sem comparação
+  entre modelos.
+  \item \textbf{Modelo-alvo não executado.} As medições usaram um modelo maior
+  e mais lento (\texttt{llama3.1:8b}); os resultados são um limite superior
+  conservador, mas o alvo (\texttt{llama3.2:3b}) não foi medido.
+  \item \textbf{Validações manuais pendentes.} Mouse com captura de cursor,
+  joystick físico e percurso humano completo do início ao fim.
+  \item \textbf{Empacotamento aberto.} Não há executável independente gerado
+  no ambiente utilizado (ausência de modelos de exportação do motor).
+  \item \textbf{Referências normativas a validar.} As edições vigentes das
+  normas ABNT e da norma de CLP citadas precisam de conferência final
+  [VALIDAR COM O AUTOR], assim como o modelo institucional de formatação.
+\end{itemize}
+
+\section{Lições de engenharia e reprodutibilidade}
+\label{sec:licoes}
+
+O desenvolvimento revelou quatro classes de obstáculos que outros projetos
+semelhantes provavelmente encontrarão, e que foram documentados no repositório
+\cite{lab404repo}:
+
+\begin{enumerate}
+  \item \textbf{Confinamento de pacote do motor.} A instalação do motor por
+  pacote confinado (formato \emph{snap}, no Linux) bloqueava o acesso a
+  dispositivos de entrada até a conexão explícita da permissão de joystick;
+  o sintoma era o adaptador existir no sistema e não existir para o jogo. O
+  diagnóstico foi possível porque o jogo registra em log os dispositivos
+  detectados na inicialização;
+  \item \textbf{Estado de áudio por aplicativo.} O servidor de áudio mantinha
+  um estado de mudo \emph{por aplicativo}; o jogo aparecia no mixer com
+  volume integral e permanecia inaudível. A correção (desmutar o fluxo
+  específico) persistiu para as execuções seguintes --- uma armadilha comum
+  de depuração, porque todo teste de sistema tocava normalmente;
+  \item \textbf{Limites do formato de transmissão 3D.} O formato glTF não
+  anima emissão de material nem transporta texto dependente de fonte; LEDs
+  intermitentes viraram lógica de script e textos de tela viraram nós de
+  texto no motor --- decisões que também simplificaram ajustes posteriores;
+  \item \textbf{Formato de importação e suposições de código.} O cálculo de
+  repetição de áudio assumia dados de amostra não comprimidos; com a
+  compressão aplicada na importação, o laço ficou incorreto até a correção
+  --- e o episódio virou uma verificação de regressão.
+\end{enumerate}
+
+\section{Implicações}
+\label{sec:implicacoes}
+
+Para o \textbf{ensino de automação}, o trabalho sugere que um laboratório
+ficcional de baixo custo pode ocupar o espaço entre a teoria e a bancada
+física, com a IA no papel de instrutor consultivo. Para a \textbf{pesquisa em
+IA em jogos}, oferece um ponto de contraste: os mesmos modelos que rendem mais
+quando recebem autonomia também entregam valor narrativo quando recebem
+limites explícitos e verificáveis. Para a \textbf{prática de desenvolvimento},
+indica que um projeto individual assistido por agentes de IA pode manter
+rastreabilidade quando a especificação e os testes precedem a implementação
+--- e quando cada promessa é verificável por um comando.
+
+\section{Trabalhos futuros}
+\label{sec:futuros}
+
+\begin{enumerate}
+  \item Executar e comparar o modelo-alvo \texttt{llama3.2:3b} com o modelo
+  usado nas medições, registrando latências nas mesmas condições;
+  \item coletar métricas de tempo de quadro por percentil, para caracterizar
+  engasgos transitórios além da média limitada por sincronismo;
+  \item concluir o empacotamento do executável e a demonstração sem
+  intervenção do desenvolvedor (FR-033);
+  \item realizar o percurso humano completo e, em seguida, um estudo
+  controlado com estudantes, medindo aprendizagem percebida e usabilidade;
+  \item ampliar o conteúdo didático --- por exemplo, cenários de falha
+  adicionais com sinais de campo --- mantendo a mesma disciplina de
+  especificação e evidências; e
+  \item automatizar a execução da suíte em integração contínua, com registro
+  público dos resultados a cada alteração.
+\end{enumerate}
+
+\section{Considerações do capítulo}
+\label{sec:consideracoes_discussao}
+
+O balanço é de um protótipo tecnicamente sólido e honestamente delimitado: o
+que foi verificado está demonstrado com números e evidências; o que não foi
+verificado está listado, com nome e sobrenome. Essa separação é, ela própria,
+parte do resultado.

@@ -1,0 +1,9 @@
+%% Maquina de estados dos equipamentos (fonte Mermaid; figures/03_estados_equipamento.png)
+stateDiagram-v2
+    [*] --> OFF
+    OFF --> READY: item instalado
+    READY --> RUNNING: comando de partida
+    RUNNING --> FAULT: falha detectada
+    FAULT --> READY: diagnostico concluido
+    RUNNING --> OFF: desligamento
+    FAULT --> OFF: isolamento

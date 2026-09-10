@@ -1,0 +1,177 @@
+\chapter{Introdução}
+\label{cap:introducao}
+
+\section{Contextualização}
+\label{sec:contextualizacao}
+
+A formação em Engenharia de Controle e Automação exige a articulação entre
+fundamentos teóricos --- sistemas de controle, eletrônica, programação --- e a
+operação de sistemas físicos reais, como controladores lógicos programáveis
+(CLPs), sensores, atuadores e painéis elétricos. Essa articulação
+teórico-prática é, historicamente, um dos pontos críticos da formação: bancadas
+didáticas completas têm custo elevado, exigem manutenção, ocupam espaço físico
+e impõem riscos elétricos e mecânicos que restringem a experimentação livre
+pelo estudante.
+
+Paralelamente, os jogos digitais consolidaram-se como uma mídia de
+aprendizagem. A literatura sobre jogos sérios demonstra que jogos podem unir
+propósito educacional e engajamento \cite{abt1970serious}, que bons jogos
+incorporam princípios de aprendizagem ativa que a escola persegue
+\cite{gee2003what} e que a simulação interativa é uma ponte natural entre
+treinamento, entretenimento e educação \cite{zyda2005from,
+laamarti2014overview}. Um laboratório virtual não substitui a bancada real,
+mas pode ocupar o espaço entre a teoria e a prática: oferecer familiaridade
+com nomenclatura, procedimentos, intertravamentos e diagnóstico de falhas
+antes --- e depois --- do contato com o equipamento físico.
+
+Nos últimos anos, uma terceira transformação se somou às duas primeiras: os
+grandes modelos de linguagem (LLMs) tornaram-se capazes de manter diálogos
+naturais e de assumir papéis relevantes em jogos, da geração de conteúdo à
+animação de personagens \cite{gallotta2024largelanguage}. Essa capacidade abre
+uma possibilidade didática específica: um personagem de IA que comenta o
+estado do laboratório, responde a perguntas técnicas e reage às decisões do
+jogador --- um instrutor ficcional sempre disponível. Ao mesmo tempo, ela
+traz dois riscos práticos. O primeiro é de \emph{controle}: como garantir que
+a IA enriqueça o jogo sem, em nenhum momento, decidir ou executar ações?
+Experiências conhecidas com personagens generativos e agentes autônomos
+mostram que muita autonomia produz comportamentos ricos, mas imprevisíveis
+\cite{park2023generative,wang2023voyager}. O segundo é de
+\emph{infraestrutura}: modelos grandes de linguagem normalmente exigem
+serviços externos ou hardware especializado, o que contraria a realidade de
+laboratórios escolares modestos.
+
+Este trabalho nasce exatamente nesse encontro. Ele descreve o projeto, o
+desenvolvimento e a validação técnica do \textbf{Laboratório 404}, um jogo
+sério 3D educacional/ficcional no qual uma IA local, a personagem \aria{},
+participa do mundo por meio de diálogo, sem nunca controlar o jogo. O
+protótipo foi construído de forma incremental, em seis provas de conceito
+(\poc{1} a \poc{6}), sobre ferramentas abertas --- o motor Godot, o Blender para
+os assets 3D e o Ollama para a inferência local --- e avaliado em um
+computador pessoal sem GPU dedicada.
+
+\section{Problema}
+\label{sec:problema}
+
+O problema que orienta este trabalho pode ser enunciado em três dimensões
+interligadas:
+
+\begin{enumerate}
+  \item \textbf{Segurança e previsibilidade da IA.} Um jogo educacional
+  precisa que cada ação do sistema seja reproduzível e auditável. É necessário
+  integrar um LLM a um jogo 3D de modo que ele enriqueça o mundo e a narrativa
+  sem receber qualquer capacidade de alterar o estado do jogo.
+  \item \textbf{Viabilidade em hardware modesto.} A integração precisa
+  funcionar em um computador pessoal sem GPU dedicada, mantendo o desempenho
+  gráfico adequado (jogabilidade fluida) e latências de conversa toleráveis
+  para o tipo de interação proposto.
+  \item \textbf{Rastreabilidade do processo.} O desenvolvimento --- de autor
+  único, assistido por agentes de inteligência artificial --- precisa ser
+  conduzido e documentado de forma que cada afirmação sobre o protótipo seja
+  sustentada por requisito, teste ou evidência verificável.
+\end{enumerate}
+
+Essas dimensões se desdobram nas questões de pesquisa que este trabalho
+persegue: (RQ1) como arquitetar a integração de um LLM local a um jogo 3D de
+modo que ele participe do mundo sem controlá-lo? (RQ2) é possível manter
+jogabilidade fluida e conversa local com latência tolerável em um computador
+sem GPU dedicada? (RQ3) como conduzir e documentar esse desenvolvimento de
+forma rastreável e reprodutível?
+
+\section{Justificativa}
+\label{sec:justificativa}
+
+A justificativa acadêmica deste trabalho repousa em três argumentos. O
+primeiro é a lacuna de integração: a literatura concentra-se, de um lado, em
+agentes autônomos capazes de agir \cite{park2023generative,wang2023voyager} e,
+de outro, em visões amplas sobre o papel das LLMs em jogos
+\cite{gallotta2024largelanguage}; é menos explorado o desenho oposto, de uma
+IA diegética com capacidade formalmente limitada, integrada a um jogo
+educacional completo e documentada com evidências de validação.
+
+O segundo argumento é a relevância prática para o ensino de automação: um
+laboratório simulado de baixo custo, executado em hardware comum e sem
+dependência de serviços pagos, amplia o tempo de exposição do estudante a
+situações de operação, falha e diagnóstico --- situações que, na bancada
+física, são limitadas por segurança, custo e disponibilidade.
+
+O terceiro argumento é metodológico: o trabalho documenta detalhadamente um
+processo de desenvolvimento orientado a especificação, com critérios de
+aceitação verificáveis, suíte automatizada e evidências visuais, incluindo as
+limitações e as pendências reais do protótipo. Esse registro tem valor para
+outros projetos que precisem integrar IA generativa a sistemas interativos com
+previsibilidade.
+
+\section{Objetivos}
+\label{sec:objetivos}
+
+\subsection{Objetivo geral}
+
+Desenvolver e validar tecnicamente um jogo sério 3D, construído sobre
+tecnologias abertas e executável em computador pessoal sem GPU dedicada, no
+qual uma inteligência artificial local participe do mundo por meio de diálogo
+--- sem controlar o jogo --- e que apoie, de forma ficcional e procedural, o
+ensino de conceitos de automação industrial.
+
+\subsection{Objetivos específicos}
+
+\begin{enumerate}
+  \item Especificar o sistema com requisitos funcionais e não funcionais,
+  critérios de aceitação no formato DADO/QUANDO/ENTÃO e matriz de
+  rastreabilidade requisito--teste;
+  \item estruturar o desenvolvimento em provas de conceito incrementais, cada
+  uma terminando em versão executável e demonstrável;
+  \item implementar o pipeline de assets 3D de modelagem no Blender até a
+  importação no motor Godot, com convenções de escala, nomenclatura e colisão;
+  \item implementar a integração com a IA local em processo separado, com
+  contrato validado, intenções restritas e resposta de \emph{fallback};
+  \item implementar o mundo reativo (estados de equipamento, missão, NPC,
+  memória, iluminação) e a geração procedural determinística da ala final;
+  \item construir a suíte de validação automatizada e o arnês de evidências
+  visuais, executá-los e registrar os resultados;
+  \item medir o desempenho gráfico e as latências da conversa na máquina de
+  referência, e registrar as limitações e pendências do protótipo.
+\end{enumerate}
+
+\section{Delimitação}
+\label{sec:delimitacao}
+
+Este trabalho é um estudo de caso de desenvolvimento tecnológico. Ele
+\emph{não} avalia aprendizagem nem experiência de usuários: não há
+experimento educacional controlado, nem estudo de usabilidade com
+participantes. A validação realizada é funcional e técnica: requisitos,
+testes automatizados, medições de desempenho e latência e evidências visuais.
+O escopo do protótipo é um recorte jogável de 10 a 20 minutos, com uma missão
+principal, uma ala procedural e um epílogo de escolhas, executado em uma
+única máquina de referência com GPU integrada. A validação em hardware real
+(joystick e mouse) e o empacotamento independente permanecem pendentes e são
+declarados como tal.
+
+\section{Visão geral da metodologia}
+\label{sec:metodologia_visao}
+
+O trabalho adota uma abordagem aplicada e incremental. A especificação foi
+escrita antes da implementação e funcionou como contrato: requisitos,
+critérios de aceitação e regras de projeto foram fixados em documentos
+versionados, e cada iteração de desenvolvimento precisava satisfazer um
+subconjunto verificável desses critérios. Seis provas de conceito organizaram
+a construção: fundação jogável (\poc{1}); laboratório funcional com missão
+(\poc{2}); integração da IA local (\poc{3}); mundo reativo (\poc{4});
+laboratório procedural (\poc{5}); e recorte vertical final (\poc{6}). A cada
+etapa, a suíte automatizada \emph{headless} e um conjunto de testes do
+adaptador de IA foram executados, e evidências visuais foram capturadas por um
+arnês de captura de tela com posicionamento programático do jogador. O
+detalhamento do método está no \autoref{cap:metodos}.
+
+\section{Organização do trabalho}
+\label{sec:organizacao}
+
+Além desta introdução, o trabalho está organizado em sete capítulos. O
+\autoref{cap:fundamentacao} apresenta a fundamentação teórica; o
+\autoref{cap:relacionados} discute os trabalhos relacionados; o
+\autoref{cap:metodos} descreve materiais e métodos; o
+\autoref{cap:desenvolvimento} detalha o desenvolvimento do sistema; o
+\autoref{cap:resultados} apresenta os experimentos e resultados; o
+\autoref{cap:discussao} discute os resultados e as limitações; e o
+\autoref{cap:conclusao} conclui o trabalho e aponta trabalhos futuros. Os
+apêndices reúnem os requisitos completos, o detalhamento da suíte de testes e
+a descrição do repositório.

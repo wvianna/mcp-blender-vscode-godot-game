@@ -1,0 +1,198 @@
+% pretextual.tex — elementos pré-textuais (capa, folha de rosto, resumos, listas, sumário)
+% Dados fornecidos pelo autor em 2026-09-10: campus, cidade e orientação.
+% [VALIDAR COM O AUTOR]: curso exato, banca e demais elementos institucionais.
+
+\frontmatter
+
+% ---------------------------------------------------------------------------
+% Capa
+% ---------------------------------------------------------------------------
+\begin{center}
+  \textbf{INSTITUTO FEDERAL FLUMINENSE}\\[2pt]
+  Campus: Meu laboratório pessoal\\
+  Curso de Engenharia de Controle e Automação [VALIDAR COM O AUTOR]
+\end{center}
+
+\vspace{2.5cm}
+
+\begin{center}
+  \textbf{WILLIAM DA SILVA VIANNA}
+\end{center}
+
+\vspace{3.0cm}
+
+\begin{center}
+  \textbf{LABORATÓRIO 404: DESENVOLVIMENTO DE UM JOGO SÉRIO 3D COM\\
+  INTELIGÊNCIA ARTIFICIAL LOCAL PARA APOIO AO\\ ENSINO DE AUTOMAÇÃO INDUSTRIAL}
+\end{center}
+
+\vfill
+
+\begin{center}
+  Campos dos Goytacazes\\
+  2026
+\end{center}
+
+\newpage
+
+% ---------------------------------------------------------------------------
+% Folha de rosto
+% ---------------------------------------------------------------------------
+\begin{center}
+  \textbf{WILLIAM DA SILVA VIANNA}
+\end{center}
+
+\vspace{2.5cm}
+
+\begin{center}
+  \textbf{LABORATÓRIO 404: DESENVOLVIMENTO DE UM JOGO SÉRIO 3D COM\\
+  INTELIGÊNCIA ARTIFICIAL LOCAL PARA APOIO AO\\ ENSINO DE AUTOMAÇÃO INDUSTRIAL}
+\end{center}
+
+\vspace{2.5cm}
+
+\hfill
+\begin{minipage}{8cm}
+  \SingleSpacing
+  \footnotesize
+  Monografia apresentada ao curso de Engenharia de Controle e Automação
+  [VALIDAR COM O AUTOR] do Instituto Federal Fluminense, como requisito
+  parcial para obtenção do título de bacharel.\\
+  Orientador: o próprio autor.\\
+  Área de concentração: automação industrial e tecnologia educacional.
+\end{minipage}
+
+\vfill
+
+\begin{center}
+  Campos dos Goytacazes\\
+  2026
+\end{center}
+
+\newpage
+
+% ---------------------------------------------------------------------------
+% Resumo
+% ---------------------------------------------------------------------------
+\chapter*{Resumo}
+\addcontentsline{toc}{chapter}{Resumo}
+
+\SingleSpacing
+
+Este trabalho descreve o projeto, o desenvolvimento e a validação técnica do
+Laboratório 404, um jogo sério 3D educacional/ficcional no qual uma
+inteligência artificial local --- a personagem \aria{} --- participa do mundo
+por meio de diálogo, sem nunca controlar o jogo. O problema abordado é
+triplo: integrar um grande modelo de linguagem (LLM) a um jogo 3D mantendo
+segurança e previsibilidade; executar essa integração em um computador pessoal
+sem GPU dedicada; e conduzir o desenvolvimento de forma rastreável, com
+requisitos verificáveis e evidências reproduzíveis. A solução foi construída em
+seis provas de conceito incrementais (\poc{1} a \poc{6}) sobre o motor Godot~4.5,
+com assets 3D modelados no Blender~5.2.1 e um adaptador local em Python/FastAPI
+que media a conversa com o Ollama, restringindo a saída do modelo a cinco
+intenções validadas em duas camadas independentes, com resposta de
+\emph{fallback} obrigatória. A validação combinou uma especificação com
+requisitos funcionais e não funcionais, critérios de aceitação no formato
+DADO/QUANDO/ENTÃO, uma suíte automatizada \emph{headless} e evidências visuais
+geradas por um arnês de captura. Os resultados obtidos na máquina de referência
+(AMD Ryzen~7 5700U, GPU integrada) foram: 211 verificações do motor e 16 testes
+do adaptador aprovados; cena 3D com 342 nós, 37 materiais e 1.018,7~KB em GLB,
+executando a 60~FPS limitados por sincronismo vertical em 1280$\times$720; e
+latências da conversa com o modelo local \texttt{llama3.1:8b} entre 12,9~s e
+22,0~s em três contextos medidos. Conclui-se que a integração proposta é viável
+no nível de protótipo, com limites declarados: ausência de estudo com usuários,
+validação em hardware real pendente, modelo-alvo \texttt{llama3.2:3b} não
+executado e empacotamento independente ainda não gerado.
+
+\vspace{1em}
+\noindent\textbf{Palavras-chave:} jogos sérios; automação industrial; grandes
+modelos de linguagem; inferência local; Godot; desenvolvimento orientado a
+especificação.
+
+\newpage
+
+% ---------------------------------------------------------------------------
+% Abstract
+% ---------------------------------------------------------------------------
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+\SingleSpacing
+
+This work describes the design, development and technical validation of
+Laboratório 404, a serious educational/fictional 3D game in which a local
+artificial intelligence --- the character \aria{} --- participates in the world
+through dialogue, without ever controlling the game. The problem addressed is
+threefold: integrating a large language model (LLM) into a 3D game while
+preserving safety and predictability; running this integration on a personal
+computer without a dedicated GPU; and conducting the development in a traceable
+way, with verifiable requirements and reproducible evidence. The solution was
+built in six incremental proofs of concept (\poc{1} to \poc{6}) on the Godot~4.5
+engine, with 3D assets modeled in Blender~5.2.1 and a local Python/FastAPI
+adapter that mediates the conversation with Ollama, restricting the model output
+to five intents validated in two independent layers, with a mandatory fallback
+response. Validation combined a specification with functional and non-functional
+requirements, acceptance criteria in GIVEN/WHEN/THEN format, an automated
+headless test suite and visual evidence produced by a screenshot harness. Results
+on the reference machine (AMD Ryzen~7 5700U, integrated GPU) were: 211 engine
+checks and 16 adapter tests passing; a 3D scene with 342 nodes, 37 materials and
+1018.7~KB in GLB, running at 60~FPS vsync-limited at 1280$\times$720; and
+conversation latencies with the local \texttt{llama3.1:8b} model between 12.9~s
+and 22.0~s across three measured contexts. It is concluded that the proposed
+integration is feasible at prototype level, with declared limitations: no user
+study, pending validation on real hardware, target model \texttt{llama3.2:3b}
+not executed, and standalone packaging not yet produced.
+
+\vspace{1em}
+\noindent\textbf{Keywords:} serious games; industrial automation; large language
+models; local inference; Godot; specification-driven development.
+
+\newpage
+
+% ---------------------------------------------------------------------------
+% Listas
+% ---------------------------------------------------------------------------
+\SingleSpacing
+
+\listoffigures
+\newpage
+\listoftables
+\newpage
+\listof{quadro}{Lista de Quadros}
+\newpage
+
+\chapter*{Lista de Abreviaturas e Siglas}
+\addcontentsline{toc}{chapter}{Lista de Abreviaturas e Siglas}
+\noindent
+\begin{tabular}{@{}>{\bfseries}p{2.2cm} p{12.5cm}@{}}
+ABNT & Associação Brasileira de Normas Técnicas \\
+API & \emph{Application Programming Interface} (interface de programação de aplicações) \\
+CLP & Controlador lógico programável \\
+CPU & \emph{Central Processing Unit} (unidade central de processamento) \\
+FPS & \emph{Frames per second} (quadros por segundo) \\
+GLB & \emph{glTF Binary} (formato binário de glTF) \\
+glTF & \emph{Graphics Language Transmission Format} \\
+GPU & \emph{Graphics Processing Unit} (unidade de processamento gráfico) \\
+HUD & \emph{Head-Up Display} (interface de informações em tela) \\
+IA & Inteligência artificial \\
+IFF & Instituto Federal Fluminense \\
+JSON & \emph{JavaScript Object Notation} \\
+LLM & \emph{Large Language Model} (grande modelo de linguagem) \\
+MCP & \emph{Model Context Protocol} \\
+NPC & \emph{Non-Player Character} (personagem não jogável) \\
+POC & \emph{Proof of Concept} (prova de conceito) \\
+REST & \emph{Representational State Transfer} \\
+SDD & \emph{Specification-Driven Development} (desenvolvimento orientado a especificação) \\
+SO & Sistema operacional \\
+WAV & \emph{Waveform Audio File Format} \\
+\end{tabular}
+
+\newpage
+
+% ---------------------------------------------------------------------------
+% Sumário
+% ---------------------------------------------------------------------------
+\SingleSpacing
+\tableofcontents
+
+\cleardoublepage
