@@ -49,6 +49,21 @@ func _ready() -> void:
                 str(jogador_atual.global_position), rad_to_deg(jogador_atual.rotation.y)
             ])
         var level = main.get_node_or_null("Level")
+        var npc = level.find_child("NPC_Tecnico_Corpo", true, false) if level != null else null
+        if npc == null:
+            print("LAB404-DUMP NPC_Tecnico_Corpo -> AUSENTE")
+        else:
+            print("LAB404-DUMP NPC_Tecnico_Corpo -> %s | mesh=%s" % [
+                npc.get_class(), str(npc.get("mesh")) if npc is MeshInstance3D else "n/a"
+            ])
+            for filho in npc.get_children():
+                print("   filho: %s (%s)" % [filho.name, filho.get_class()])
+            var pai = npc.get_parent()
+            if pai != null:
+                print("   pai: %s (%s)" % [pai.name, pai.get_class()])
+                for irmao in pai.get_children():
+                    if "NPC" in String(irmao.name):
+                        print("   irmão: %s (%s)" % [irmao.name, irmao.get_class()])
         for grupo in ["Accents", "Labels", "CAM_Security"]:
             var no = level.get_node_or_null(grupo) if level != null else null
             if no == null:
